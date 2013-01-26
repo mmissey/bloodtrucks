@@ -19,9 +19,9 @@
             line-height: 1.5em;
         } 
 
-		canvas{
-			border:1px solid red;  
-			width:100%;
+		#collisioncanvas{
+			border:1px solid red; 
+			width:100%; 
 		}
     </style>
 </head>
@@ -36,7 +36,7 @@
     </div>
 
     <div id="game" class="step" data-x="0" data-y="0" data-scale="4">
-		<canvas id="canvas" width="1200" height="900"></canvas>
+		<canvas id="collisioncanvas" width="1200" height="900"></canvas>
 		<button onclick="init();">Init</button>
     </div>
 
@@ -92,20 +92,28 @@ function init() {
    world.CreateBody(bodyDef).CreateFixture(fixDef);   
    
    
-   //create some objects
-   bodyDef.type = b2Body.b2_dynamicBody;
-   for(var i = 1; i < 10; ++i) {
-         fixDef.shape = new b2CircleShape(
-            1 //radius
-         );
-      bodyDef.position.x = Math.random() * 10;
-      bodyDef.position.y = Math.random() * 10;
-      world.CreateBody(bodyDef).CreateFixture(fixDef);
-   }
+	bodyDef.type = b2Body.b2_kinematicBody;
+	fixDef.shape = new b2CircleShape(
+	  1 //radius
+	);
+	bodyDef.position.x = 10;
+	bodyDef.position.y = 10;
+	world.CreateBody(bodyDef).CreateFixture(fixDef);  
+	
+	bodyDef.type = b2Body.b2_dynamicBody;
+	for(var i = 0; i < 10; i++){
+		fixDef.shape = new b2CircleShape(
+		  1 //radius
+		);
+		bodyDef.position.x = Math.random() * 20;
+		bodyDef.position.y = Math.random() * 20;
+		world.CreateBody(bodyDef).CreateFixture(fixDef);    
+	}
+
    
    //setup debug draw
    var debugDraw = new b2DebugDraw();
-		debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
+		debugDraw.SetSprite(document.getElementById("collisioncanvas").getContext("2d"));
 		debugDraw.SetDrawScale(45.0);
 		debugDraw.SetFillAlpha(0.5);
 		debugDraw.SetLineThickness(1.0);
@@ -115,14 +123,14 @@ function init() {
    window.setInterval(update, 1000 / 60);
    
    //mouse
-   
    var mouseX, mouseY, mousePVec, isMouseDown, selectedBody, mouseJoint;
-   var canvasPosition = getElementPosition(document.getElementById("canvas"));
+   var canvasPosition = getElementPosition(document.getElementById("collisioncanvas"));
    
    document.addEventListener("mousedown", function(e) {
       isMouseDown = true;
       handleMouseMove(e);
-      document.addEventListener("mousemove", handleMouseMove, true);
+      document.addEventListener("mousemove", handleMouseMove, true); 
+ 
    }, true);
    
    document.addEventListener("mouseup", function() {
@@ -132,9 +140,10 @@ function init() {
       mouseY = undefined;
    }, true);
    
-   function handleMouseMove(e) {
-      mouseX = (e.clientX - canvasPosition.x) / 30;
-      mouseY = (e.clientY - canvasPosition.y) / 30;
+   function handleMouseMove(e) { 
+	var canvasratio = $('#collisioncanvas').attr('width') / $('#collisioncanvas').width();
+      mouseX = ((e.pageX - canvasPosition.x) / 45) * canvasratio;
+      mouseY = ((e.pageY - canvasPosition.y) / 45) * canvasratio;
    };
    
    function getBodyAtMouse() {
@@ -144,7 +153,6 @@ function init() {
       aabb.upperBound.Set(mouseX + 0.001, mouseY + 0.001);
       
       // Query the world for overlapping shapes.
-
       selectedBody = null;
       world.QueryAABB(getBodyCB, aabb);
       return selectedBody;
@@ -164,29 +172,13 @@ function init() {
    
    function update() {
    
-      if(isMouseDown && (!mouseJoint)) {
+      if(isMouseDown) {
          var body = getBodyAtMouse();
          if(body) {
-            var md = new b2MouseJointDef();
-            md.bodyA = world.GetGroundBody();
-            md.bodyB = body;
-            md.target.Set(mouseX, mouseY);
-            md.collideConnected = true;
-            md.maxForce = 300.0 * body.GetMass();
-            mouseJoint = world.CreateJoint(md);
             body.SetAwake(true);
          }
       }
       
-      if(mouseJoint) {
-         if(isMouseDown) {
-            mouseJoint.SetTarget(new b2Vec2(mouseX, mouseY));
-         } else {
-            world.DestroyJoint(mouseJoint);
-            mouseJoint = null;
-         }
-      }
-   
       world.Step(1 / 60, 10, 10);
       world.DrawDebugData();
       world.ClearForces();
