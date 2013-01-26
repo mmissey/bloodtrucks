@@ -11,63 +11,71 @@
     <link href='http://fonts.googleapis.com/css?family=Original+Surfer' rel='stylesheet' type='text/css'>
     <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
     <style>
-		#game{
-			position:relative; 
- 			margin: 100% 0;  
-		}
-		
-		#gameholder{
-			display:inline-block;
-			position:relative;
-		}
-
     #menu{
       display: block;
-      height: 768px;
-      width: 1024px;
+      height: 100%;
+      width: 100%;
+      padding: 5% 3%;
       text-align: center;
       font-family: 'Original Surfer', cursive;
-      border: 5px solid #000000;
       
     }
 
-    #menu ul{
-      margin-top: 200px;
-    }
     #menu li{
       font-size: 5em;
       line-height: 1.5em;
       list-style: none;
     }
 
-		#collisioncanvas{
-			border:1px solid red; 
-			width:100%;
+	#gameholder{
+		position:relative;
+		display:inline-block;
+	}
+
+ 	#collisioncanvas{
+		border:1px solid red; 
+		width: 100%;
+		max-width: 1024px;
+		margin: 0 auto;     
 		}
-		
-		#heartholder{
-			height: 60px;
-			width: 60px;
-			position: absolute;
-			top: 10px;
-			right: 0px;
-			text-align:right;
-		}
-		
-		#heart{
-			height:100%;
-			width:100%; 
-			min-width:50%;
-			min-height:50%;
-			background: rgba(255,0,0,0.5);  
-			border-radius:100%; 
-			position:relative;
-			display:inline-block;
-		}
+    #game{
+		margin: 100% 0;
+		text-align: center;    
+    }
 
     #btnHelp{
       font-size: 2em !important;
     }
+
+    #title{
+     font-size: 5em;
+     margin-top: 2em;
+    }
+
+	#collisioncanvas{
+		border:1px solid red; 
+		width:100%;
+	}
+
+	#heartholder{
+		height: 60px;
+		width: 60px;
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		text-align:right;
+	}
+
+	#heart{
+		height:100%;
+		width:100%; 
+		min-width:50%;
+		min-height:50%;
+		background: rgba(255,0,0,0.5);  
+		border-radius:100%; 
+		position:relative;
+		display:inline-block;
+	}
     </style>
 
 </head>
@@ -75,7 +83,8 @@
 
 <body>
 
-    <div id="menu" class="step slide" data-x="-1000" data-y="-1500">
+    <div id="menu" class="step slide">
+        <h1 id="title">BLOODTRUCKS</h1>
         <ul>
             <li id="btnPlay">Play</li>
             <li id="btnHelp">Help</li>
@@ -87,229 +96,255 @@
 			<div id="heartholder">
 				<div id="heart"></div>
 			</div>
-			<canvas id="collisioncanvas" width="1200" height="900"></canvas> 
+			<canvas id="collisioncanvas" width="1200" height="900"></canvas>
+			<div id="combo"> 
+				
+			</div>
 		</div>
     </div>
 
 
-<script>
-if ("ontouchstart" in document.documentElement) { 
-    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
-}
-</script>
-<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
-<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
-<script> 
-
-var hbtime = 100, currenthbtime = 0;
-
-function init() {
-   var   b2Vec2 = Box2D.Common.Math.b2Vec2
-      ,  b2AABB = Box2D.Collision.b2AABB
-   	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
-   	,	b2Body = Box2D.Dynamics.b2Body
-   	,	b2FixtureDef = Box2D.Dynamics.b2FixtureDef
-   	,	b2Fixture = Box2D.Dynamics.b2Fixture
-   	,	b2World = Box2D.Dynamics.b2World
-   	,	b2MassData = Box2D.Collision.Shapes.b2MassData
-   	,	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
-   	,	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
-   	,	b2DebugDraw = Box2D.Dynamics.b2DebugDraw
-      ,  b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef
-, newthing
-      ;
-   
-   var world = new b2World(
-         new b2Vec2(0, 0)    //gravity
-      ,  true                 //allow sleep
-   );
-   
-   var fixDef = new b2FixtureDef;
-   fixDef.density = 1.0;
-   fixDef.friction = 0.5;
-   fixDef.restitution = 0.2;
-   
-   var bodyDef = new b2BodyDef;
-   
-   //create ground
-   bodyDef.type = b2Body.b2_staticBody;
-   fixDef.shape = new b2PolygonShape;
-   fixDef.shape.SetAsBox(20, 2);
-   bodyDef.position.Set(10, -1.5);
-   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
-	newthing.utype = 'wall';
-   bodyDef.position.Set(10, 21.5);
-   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
-	newthing.utype = 'wall';  
-   fixDef.shape.SetAsBox(2, 14);
-   bodyDef.position.Set(-1.5, 13);
-   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
-	newthing.utype = 'wall';  
-   bodyDef.position.Set(28.2, 13);
-   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
-	newthing.utype = 'wall';   
-   
-	bodyDef.type = b2Body.b2_kinematicBody;
-	fixDef.shape = new b2CircleShape(
-	  1.3 //radius
-	);
-	bodyDef.position.x = 14;
-	bodyDef.position.y = 10;
-	newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
-	newthing.utype = 'vein'; 
-	
-	bodyDef.type = b2Body.b2_dynamicBody;
-	for(var i = 0; i < 10; i++){
-		fixDef.shape = new b2CircleShape(
-		  1 //radius
-		);
-		bodyDef.position.x = Math.random() * 20;
-		bodyDef.position.y = Math.random() * 20;
-		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
-		newthing.utype = 'cell';   
+	<script>
+	if ("ontouchstart" in document.documentElement) { 
+	    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
 	}
+	</script>
+	<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
+	<script> 
 
-   
-   //setup debug draw
-   var debugDraw = new b2DebugDraw();
-		debugDraw.SetSprite(document.getElementById("collisioncanvas").getContext("2d"));
-		debugDraw.SetDrawScale(45.0);
-		debugDraw.SetFillAlpha(0.5);
-		debugDraw.SetLineThickness(1.0);
-		debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-		world.SetDebugDraw(debugDraw);
-   
-   window.setInterval(update, 1000 / 60);
-   
-   //mouse
-   var mouseX, mouseY, mousePVec, isMouseDown, selectedBody;
-   var canvasPosition = getElementPosition(document.getElementById("collisioncanvas"));
-   mousecollision = new b2BodyDef;
-   document.addEventListener("mousedown", function(e) {
-      isMouseDown = true;
-      handleMouseMove(e); 
-      document.addEventListener("mousemove", handleMouseMove, true); 
- 
-   }, true);
-   
-   document.addEventListener("mouseup", function() {
-		document.removeEventListener("mousemove", handleMouseMove, true);
-		isMouseDown = false;
-		mouseX = undefined;
-		mouseY = undefined;  
-		world.DestroyBody(mousecollision);
-   }, true);
-   
-   function handleMouseMove(e) { 
+	var hbtime = 100, 
+	currenthbtime = 0,
+	cellmovement = 0.8; 
+	
+	var mouseX, mouseY;
 	var canvasratio = $('#collisioncanvas').attr('width') / $('#collisioncanvas').width();
-      mouseX = ((e.pageX - canvasPosition.x) / 45) * canvasratio;
-      mouseY = ((e.pageY - canvasPosition.y) / 45) * canvasratio;
-   };
-   
-   function getBodyAtMouse() {
-      mousePVec = new b2Vec2(mouseX, mouseY);
-      var aabb = new b2AABB();
-      aabb.lowerBound.Set(mouseX - 0.001, mouseY - 0.001);
-      aabb.upperBound.Set(mouseX + 0.001, mouseY + 0.001);  
 
-      // Query the world for overlapping shapes.
-      selectedBody = null;
-      world.QueryAABB(getBodyCB, aabb);
-      return selectedBody;
-   }
+	function init() {
+	   var   b2Vec2 = Box2D.Common.Math.b2Vec2
+	      ,  b2AABB = Box2D.Collision.b2AABB
+	   	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
+	   	,	b2Body = Box2D.Dynamics.b2Body
+	   	,	b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+	   	,	b2Fixture = Box2D.Dynamics.b2Fixture
+	   	,	b2World = Box2D.Dynamics.b2World
+	   	,	b2MassData = Box2D.Collision.Shapes.b2MassData
+	   	,	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+	   	,	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
+	   	,	b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+	      ,  b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef
+	, newthing
+	      ;
 
-   function getBodyCB(fixture) {
-      if(fixture.GetBody().GetType() != b2Body.b2_staticBody) {
-         if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)) {
-            selectedBody = fixture.GetBody();
-            return false;
-         }
-      }
-      return true;
-   }
-   
-   //update 
-
-   function heartbeat(){
-		for (var b = world.m_bodyList; b; b = b.m_next) {
-			var xf = b.m_xf;
-            for (var f = b.GetFixtureList(); f; f = f.m_next) {
-                if(f.utype == 'cell'){
-   					//b.ApplyForce(new b2Vec2(1,1), new b2Vec2(xf.x,xf.y)); 
-					b.SetAwake(true);
-					if(Math.random() > 0.5){
-						b.SetLinearVelocity(new b2Vec2((Math.random() - 0.5) * 0.8),((Math.random() - 0.5) * 0.8)); 
-					}                 
-				}
-				 			
-			}
-		}
-   }
-   
-   function update() {
-   
-      if(isMouseDown) {
-         var body = getBodyAtMouse();
-         if(body) {
-            body.SetAwake(true);
-         }
-      }
-      
-      world.Step(1 / 60, 10, 10);
-      world.DrawDebugData();
-      world.ClearForces();  
-
-	  currenthbtime += 1;
-		$('#heart').css({
-			width: (Math.sin(((currenthbtime*2)/hbtime) * Math.PI) * 100) + '%' ,
-			height: (Math.sin(((currenthbtime*2)/hbtime) * Math.PI ) * 100) + '%' 
-		})
+	   var world = new b2World(
+	         new b2Vec2(0, 0)    //gravity
+	      ,  true                 //allow sleep
+	   ); 
 	
-	  if(currenthbtime > hbtime){
-		currenthbtime = 0;
-		heartbeat();
-	}
-   };
-   
-   //helpers
-   
-   //http://js-tut.aardon.de/js-tut/tutorial/position.html
-   function getElementPosition(element) {
-      var elem=element, tagname="", x=0, y=0;
-     
-      while((typeof(elem) == "object") && (typeof(elem.tagName) != "undefined")) {
-         y += elem.offsetTop;
-         x += elem.offsetLeft;
-         tagname = elem.tagName.toUpperCase();
+		world.bodylist = [];
 
-         if(tagname == "BODY")
-            elem=0;
+	   var fixDef = new b2FixtureDef;
+	   fixDef.density = 1.0;
+	   fixDef.friction = 0.5;
+	   fixDef.restitution = 0.2;
 
-         if(typeof(elem) == "object") {
-            if(typeof(elem.offsetParent) == "object")
-               elem = elem.offsetParent;
-         }
-      }
+	   var bodyDef = new b2BodyDef;
 
-      return {x: x, y: y};
-   }
+	   //create ground
+	   bodyDef.type = b2Body.b2_staticBody;
+	   fixDef.shape = new b2PolygonShape;
+	   fixDef.shape.SetAsBox(20, 2);
+	   bodyDef.position.Set(10, -1.5);
+	   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'wall';
+	   bodyDef.position.Set(10, 21.5);
+	   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'wall';  
+	   fixDef.shape.SetAsBox(2, 14);
+	   bodyDef.position.Set(-1.5, 13);
+	   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'wall';  
+	   bodyDef.position.Set(28.2, 13);
+	   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'wall';   
+
+		bodyDef.type = b2Body.b2_kinematicBody;
+		fixDef.shape = new b2CircleShape(
+		  1.3 //radius
+		);
+		bodyDef.position.x = 14;
+		bodyDef.position.y = 10;
+		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
+		newthing.utype = 'vein'; 
+
+		bodyDef.type = b2Body.b2_dynamicBody;
+		for(var i = 0; i < 10; i++){
+			fixDef.shape = new b2CircleShape(
+			  1 //radius
+			);
+			bodyDef.position.x = Math.random() * 20;
+			bodyDef.position.y = Math.random() * 20;
+			newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
+			newthing.utype = 'cell';   
+		}
 
 
-};
-init();
-</script>
-<script type="text/javascript">
-        $('html, body').animate({
-                 scrollTop: 0
-            }, 'slow');
-        $("#btnPlay").on("click", function(){
-            init();
-            
-             $('html, body').animate({
-                 scrollTop: $('#game').offset().top
-            }, 'slow');
-        });
-       
-    </script>
+	   //setup debug draw
+	   var debugDraw = new b2DebugDraw();
+			debugDraw.SetSprite(document.getElementById("collisioncanvas").getContext("2d"));
+			debugDraw.SetDrawScale(45.0);
+			debugDraw.SetFillAlpha(0.5);
+			debugDraw.SetLineThickness(1.0);
+			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+			world.SetDebugDraw(debugDraw);
+
+	   window.setInterval(update, 1000 / 60);
+
+	   //mouse
+	   var mousePVec, isMouseDown, selectedBody;
+	   var canvasPosition = getElementPosition(document.getElementById("collisioncanvas"));
+	   mousecollision = new b2BodyDef;
+	   document.addEventListener("mousedown", function(e) {
+	      isMouseDown = true; 
+			canvasratio = $('#collisioncanvas').attr('width') / $('#collisioncanvas').width(); 
+	
+			for (var b = world.m_bodyList; b; b = b.m_next) {
+				var xf = b.m_xf;
+	            for (var f = b.GetFixtureList(); f; f = f.m_next) {
+	                if(f.utype == 'cell' || f.utype =='vein'){
+          				b.canselect = true;
+					}
+				}
+			}
+	
+	      handleMouseMove(e); 
+	      document.addEventListener("mousemove", handleMouseMove, true); 
+
+	   }, true);
+
+	   document.addEventListener("mouseup", function() {
+			document.removeEventListener("mousemove", handleMouseMove, true);
+			isMouseDown = false;
+			mouseX = undefined;
+			mouseY = undefined;  
+	   }, true);
+
+	   function handleMouseMove(e) { 
+		
+	      mouseX = ((e.pageX - canvasPosition.x) / 45) * canvasratio;
+	      mouseY = ((e.pageY - canvasPosition.y) / 45) * canvasratio;
+	   };
+
+	   function getBodyAtMouse() {
+	      mousePVec = new b2Vec2(mouseX, mouseY);
+	      var aabb = new b2AABB();
+	      aabb.lowerBound.Set(mouseX - 0.001, mouseY - 0.001);
+	      aabb.upperBound.Set(mouseX + 0.001, mouseY + 0.001);  
+
+	      // Query the world for overlapping shapes.
+	      selectedBody = null;
+	      world.QueryAABB(getBodyCB, aabb);
+	      return selectedBody;
+	   }
+
+	   function getBodyCB(fixture) {
+	      if(fixture.GetBody().GetType() != b2Body.b2_staticBody) {
+	         if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)) {
+	            selectedBody = fixture.GetBody();
+	            return false;
+	         }
+	      }
+	      return true;
+	   }
+
+	   //update 
+
+	   function heartbeat(){
+			for (var b = world.m_bodyList; b; b = b.m_next) {
+				var xf = b.m_xf;
+	            for (var f = b.GetFixtureList(); f; f = f.m_next) {
+	                if(f.utype == 'cell'){
+						b.SetAwake(true);
+						if(Math.random() > 0.5){
+							b.SetLinearVelocity(new b2Vec2((Math.random() - 0.5) * cellmovement),0); 
+						}                 
+					}
+				}
+			}
+	   }
+
+	   function update() {
+
+	      if(isMouseDown) {
+	         var body = getBodyAtMouse();
+	         if(body) {
+				if(body.canselect){ 
+					if(world.bodylist.length === 0 && body.GetFixtureList().utype !== 'vein'){
+						isMouseDown = false;
+						return false;
+					}
+					
+					body.canselect = false; 
+					world.bodylist.push(body); 
+				    $('#combo').append($('<div>').addClass('combobody').text(body.GetFixtureList().utype));  
+				}
+	         }
+	      }
+
+	      world.Step(1 / 60, 10, 10);
+	      world.DrawDebugData();
+	      world.ClearForces();  
+
+		  currenthbtime += 1;
+			$('#heart').css({
+				width: (Math.sin(((currenthbtime*2)/hbtime) * Math.PI) * 100) + '%' ,
+				height: (Math.sin(((currenthbtime*2)/hbtime) * Math.PI ) * 100) + '%' 
+			})
+
+		  if(currenthbtime > hbtime){
+			currenthbtime = 0;
+			heartbeat();
+		}
+	   };
+
+	   //helpers
+
+	   //http://js-tut.aardon.de/js-tut/tutorial/position.html
+	   function getElementPosition(element) {
+	      var elem=element, tagname="", x=0, y=0;
+
+	      while((typeof(elem) == "object") && (typeof(elem.tagName) != "undefined")) {
+	         y += elem.offsetTop;
+	         x += elem.offsetLeft;
+	         tagname = elem.tagName.toUpperCase();
+
+	         if(tagname == "BODY")
+	            elem=0;
+
+	         if(typeof(elem) == "object") {
+	            if(typeof(elem.offsetParent) == "object")
+	               elem = elem.offsetParent;
+	         }
+	      }
+
+	      return {x: x, y: y};
+	   }
+
+
+	};
+	</script>
+	<script type="text/javascript">
+	        $('html, body').animate({
+	                 scrollTop: 0
+	            }, 'slow');
+	        $("#btnPlay").on("click", function(){
+	            init();
+
+	             $('html, body').animate({
+	                 scrollTop: $('#game').offset().top-20
+	            }, 'slow');
+	        });
+
+	    </script>
 </body>
 </html>
