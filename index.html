@@ -8,23 +8,43 @@
 
     <link rel="shortcut icon" href="favicon.png" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link href='http://fonts.googleapis.com/css?family=Original+Surfer' rel='stylesheet' type='text/css'>
     <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
     <style>
-        #menu ul{
-            margin-top: 250px;
-            text-align: center;
-        }
-        #menu li{
-            font-size: 3em;
-            line-height: 1.5em;
-        } 
+    #menu{
+      display: block;
+      height: 768px;
+      width: 1024px;
+      text-align: center;
+      font-family: 'Original Surfer', cursive;
+      border: 5px solid #000000;
+      
+    }
+
+    #menu ul{
+      margin-top: 200px;
+    }
+    #menu li{
+      font-size: 5em;
+      line-height: 1.5em;
+      list-style: none;
+    }
 
 		#collisioncanvas{
 			border:1px solid red; 
-			width:100%; 
+			width:1024px; 
 		}
+    #game{
+      margin: 100% 0;
+    }
+
+    #btnHelp{
+      font-size: 2em !important;
+    }
     </style>
+
 </head>
+
 
 <body>
 
@@ -37,7 +57,6 @@
 
     <div id="game" class="step" data-x="0" data-y="0" data-scale="4">
 		<canvas id="collisioncanvas" width="1200" height="900"></canvas>
-		<button onclick="init();">Init</button>
     </div>
 
 
@@ -46,7 +65,7 @@ if ("ontouchstart" in document.documentElement) {
     document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
 }
 </script>
-<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script> 
+<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
 <script src="js/Box2dWeb-2.1.a.3.min.js"></script>
 <script>
 
@@ -211,6 +230,18 @@ function init() {
 };
 
 </script>
-
+<script type="text/javascript">
+        $('html, body').animate({
+                 scrollTop: 0
+            }, 'slow');
+        $("#btnPlay").on("click", function(){
+            init();
+            
+             $('html, body').animate({
+                 scrollTop: $('#game').offset().top
+            }, 'slow');
+        });
+       
+    </script>
 </body>
 </html>
