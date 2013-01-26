@@ -256,7 +256,8 @@ function init() {
       }
       
       world.Step(1 / 60, 10, 10);
-      world.DrawDebugData();
+        //world.DrawDebugData();
+        world.DrawLiveData();
       world.ClearForces();  
 
 	  currenthbtime += 1;
@@ -296,7 +297,6 @@ function init() {
 
 
 };
-init();
 </script>
 <script type="text/javascript">
         $('html, body').animate({
