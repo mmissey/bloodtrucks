@@ -137,7 +137,7 @@
     </div>
 
 
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+	<script src="js/jquery.js"></script>
 	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
 	<script src="js/jquery.zoomooz.min.js"></script> 
 	<script> 
@@ -150,12 +150,12 @@
 	// }).on('zoomout', function(){
 	// 	$('#centerzoom').zoomTarget();
 	// 	
-	// });   
+	// });    
 	
 
 	var hbtime = 100, 
 	currenthbtime = 0,
-	cellmovement = 0.4,
+	cellmovement = 2,
 	celllife = 1000,
 	lifeminus = 0.5,
 	exfoliate = 0.999,
@@ -179,12 +179,39 @@
 		'vein'		 : 'http://www.placekitten.com/10/110',
 		'wall'		 : 'http://www.placekitten.com/10/110'
 	}; 
+	rbmovement = 6,
+	objectid = 0,
+	redcellstart = 4,
+	cellstart = 10; 
 	
-	var mouseX, mouseY;
+	var cats = {
+		walls: 0x0001,
+		veins: 0x0002,
+		cells: 0x0004,
+		rbs: 0x0008,
+		arbs: 0x0010,
+		dest: 0x0020
+	};
+	
+	var mouseX, mouseY, destination;
 	var canvasratio = $('#collisioncanvas').attr('width') / $('#collisioncanvas').width();  
 	
 	function randrange (min, max) {
 	    return Math.random() * (max - min) + min;
+	} 
+	
+	function randomString(length) {
+	    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+
+	    if (! length) {
+	        length = Math.floor(Math.random() * chars.length);
+	    }
+
+	    var str = '';
+	    for (var i = 0; i < length; i++) {
+	        str += chars[Math.floor(Math.random() * chars.length)];
+	    }
+	    return str;
 	}
 
 	function loadImages(){
@@ -216,21 +243,69 @@
 	      ,  true                 //allow sleep
 	   ); 
 	
-		world.bodylist = [];
+		world.pathlist = []; 
+		
+		var listener = new Box2D.Dynamics.b2ContactListener;
+		listener.BeginContact = function(contact) {
 
+			function whois(type, a, b) {
+				if (a.utype == type) return a;
+				if (b.utype == type) return b;
+				return -1;
+			}
+
+			var a = contact.GetFixtureA();
+			var b = contact.GetFixtureB(); 
+			
+			if((a.utype === undefined || b.utype === undefined) || (a.utype === 'vein' || b.utype === 'vein') || (a.utype === 'wall' || b.utype === 'wall') || (a.utype === b.utype)) return; 
+			
+			var rb = whois('rbmoving', a, b);
+			var cell = whois('cell', a, b); 
+			var dest = whois('destination', a, b);
+			var dead = whois('deadcell', a, b);
+			
+			//If an rb is hitting the destination
+			if(dest !== -1 && rb !== -1){
+				if(rb.path.length > 1) return;
+				rb.utype = 'rbcharging';
+				rb.m_filter.categoryBits = cats.rbs;
+				rb.m_filter.maskBits = cats.veins | cats.rbs;
+				rb.path = []; 
+				rb.obj_data.bubbles = 4;  			
+			}
+			
+			if(rb === -1) return; 
+			
+			if(rb.obj_data.bubbles > 0){ 
+				
+				if(cell !== -1){
+					cell.obj_data.o2 += 1000;
+					rb.obj_data.bubbles -=1;  
+				}
+			}  
+			
+			rb.path.shift();
+  
+			
+		}
+		world.SetContactListener(listener); 
+		
 	   var fixDef = new b2FixtureDef;
 	   fixDef.density = 1.0;
 	   fixDef.friction = 0.5;
 	   fixDef.restitution = 0.2;
 
 	   var bodyDef = new b2BodyDef;  
-	
+	   bodyDef.linearDamping = 1;
 	
 	function randcell(){
 		bodyDef.type = b2Body.b2_dynamicBody;
 		fixDef.shape = new b2CircleShape(
 		  1 //radius
 		);
+		fixDef.filter.categoryBits = cats.cells;
+		fixDef.filter.maskBits = cats.walls | cats.veins | cats.arbs;
+		
 		bodyDef.position.x = Math.random() * 20;
 		bodyDef.position.y = Math.random() * 20;
 		while(bodyDef.position.x > vein.xmin && bodyDef.position.x < vein.xmax && bodyDef.position.y > vein.ymin && bodyDef.position.y < vein.ymax){
@@ -243,13 +318,15 @@
 		var thisCellsLife = celllife + (Math.random() * celllifevar);
 		newthing.obj_data = {
 			o2: thisCellsLife,
-			o2max: thisCellsLife
-		}
+			o2max: thisCellsLife,
+			id: objectid
+		};
+		objectid ++;
 		newthing.obj_actions = {
 			celldeath: function(){
 				console.log('celldeath');
 			}
-		}
+		};
 	}
 	
 	function newrb(){
@@ -257,6 +334,9 @@
 		fixDef.shape = new b2CircleShape(
 		  0.4 //radius
 		);
+		fixDef.isSensor = false;
+		fixDef.filter.categoryBits = cats.rbs;
+		fixDef.filter.maskBits = cats.rbs | cats.veins;
 		bodyDef.position.x = randrange(vein.xmin, vein.xmax);
 		bodyDef.position.y = randrange(vein.ymin, vein.ymax);
 
@@ -264,7 +344,8 @@
 		newthing.utype = 'rbcharging';
 		newthing.obj_data = {
 			o2: rblife,
-			o2max: rblife
+			o2max: rblife,
+			bubbles: 4
 		}
 		newthing.obj_actions = {
 			celldeath: function(){
@@ -293,43 +374,53 @@
 
 		
 		//create vein
-	   bodyDef.type = b2Body.b2_staticBody;
-	   fixDef.shape = new b2PolygonShape;
-			//top bottom walls    
-	fixDef.shape.SetAsBox(2, 0.1);
-	   bodyDef.position.Set(vein.xcenter, vein.ymin);
-	   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		bodyDef.type = b2Body.b2_staticBody;
+		fixDef.shape = new b2PolygonShape;
+		//top bottom walls    
+		fixDef.shape.SetAsBox(2, 0.1);  
+		fixDef.filter.categoryBits = cats.veins;
+		fixDef.filter.maskBits = cats.rbs | cats.cells;
+		bodyDef.position.Set(vein.xcenter, vein.ymin);
+		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
 		newthing.utype = 'vein';
-			   bodyDef.position.Set(vein.xcenter, vein.ymax);
-			   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		bodyDef.position.Set(vein.xcenter, vein.ymax);
+		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
 		newthing.utype = 'vein';    
 		//left right walls
-			   fixDef.shape.SetAsBox(0.1, 1.6);
-			   	   bodyDef.position.Set(vein.xmin, vein.ycenter); 
-			   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		fixDef.shape.SetAsBox(0.1, 1.6);
+		fixDef.filter.categoryBits = cats.veins;
+		fixDef.filter.maskBits = cats.rbs | cats.cells;
+		bodyDef.position.Set(vein.xmin, vein.ycenter); 
+		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
 		newthing.utype = 'vein';   
-		   	   bodyDef.position.Set(vein.xmax, vein.ycenter);
-			   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
-		newthing.utype = 'vein';
+		bodyDef.position.Set(vein.xmax, vein.ycenter);
+		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'vein';   
 		
-		// //Temporary purple start point
-		// bodyDef.type = b2Body.b2_kinematicBody;
-		// fixDef.shape.SetAsBox(2.12, 1.6);
-		// bodyDef.position.Set(vein.xcenter, vein.ycenter);
-		// newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
-		// newthing.utype = 'vein'; 
+		//Temporary purple start point
+		bodyDef.type = b2Body.b2_kinematicBody; 
+		fixDef.shape = new b2PolygonShape;
+		fixDef.shape.SetAsBox(1.5, 1);
+		fixDef.isSensor = true;
+		fixDef.filter.categoryBits = cats.dest;
+		fixDef.filter.maskBits = cats.arbs;
+		bodyDef.position.Set(vein.xcenter, vein.ycenter);
+		destination = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		destination.utype = 'destination'; 
 		
-		 		for(var i = 0; i < 4; i++){ 
-		 				newrb();
-		 		}   
+		
+		//Draw RBS
+ 		for(var i = 0; i < redcellstart; i++){ 
+ 				newrb();
+ 		}    
 		
 
 		//Draw Cells
-		 		for(var i = 0; i < 10; i++){ 
-		 			setTimeout(function(){
-		 				randcell();
-		 			}, Math.random() * i * 1000); 
-		 		}
+ 		for(var i = 0; i < cellstart; i++){ 
+ 			setTimeout(function(){
+ 				randcell();
+ 			}, Math.random() * i * 1000); 
+ 		}     
 
 
 	   //setup debug draw
@@ -366,6 +457,18 @@
 
 	   document.addEventListener("mouseup", function() {
 			document.removeEventListener("mousemove", handleMouseMove, true);
+			var rb =  world.pathlist[0];
+			rb.utype = 'rbmoving';
+			rb.m_filter.categoryBits = cats.arbs;
+			rb.m_filter.maskBits = cats.dest | cats.cells | cats.walls;
+			world.pathlist.shift();
+			rb.path = world.pathlist;
+			rb.path.push(destination); 
+			world.pathlist = []; 
+			
+			var ctx = document.getElementById('pathcanvas').getContext('2d'); 
+			ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+			
 			isMouseDown = false;
 			mouseX = undefined;
 			mouseY = undefined;  
@@ -375,7 +478,7 @@
 		
 	      mouseX = ((e.pageX - $('#gameholder').position().left) / 45) * canvasratio;
 	      mouseY = ((e.pageY - $('#gameholder').position().top) / 45) * canvasratio;   
-	      console.log(e.x, e.y, $('body').css('webkitTransform'));
+	      //console.log(e.x, e.y, $('body').css('webkitTransform'));
 	   };
 
 	   function getBodyAtMouse() {
@@ -391,7 +494,7 @@
 	   }
 
 	   function getBodyCB(fixture) {
-	      if(fixture.GetBody().GetType() != b2Body.b2_staticBody) {
+	      if(fixture.GetBody().GetType() != b2Body.b2_staticBody && fixture.utype !== 'destination') {
 	         if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)) {
 	            selectedBody = fixture.GetBody();
 	            return false;
@@ -406,12 +509,39 @@
 			for (var b = world.m_bodyList; b; b = b.m_next) {
 				var xf = b.m_xf;
 	            for (var f = b.GetFixtureList(); f; f = f.m_next) {
-	                if(f.utype == 'cell'){
+	                switch(f.utype){
+						case 'cell':
 						b.SetAwake(true);
 						if(Math.random() > 0.5){ 
 							var direction = new b2Vec2((Math.random() - 0.5) * cellmovement, (Math.random() - 0.5) * cellmovement);
 							b.SetLinearVelocity(direction); 
-						}                 
+						}
+						break;
+						case 'rbmoving': 
+	   							b.SetAwake(true);
+								if(f.path.length === 0){
+									f.path.push(destination);
+								}
+	
+								var loc = f.path[0].m_body.m_xf.position;
+								var direction = new b2Vec2(
+									loc.x - xf.position.x, 
+									loc.y - xf.position.y);
+								
+								direction.Normalize();
+								direction.Multiply(rbmovement);	
+								 
+								b.SetLinearVelocity(direction);   			
+						
+						
+						break;
+						case 'rbcharging':
+						b.SetAwake(true);
+						if(Math.random() > 0.5){ 
+							var direction = new b2Vec2((Math.random() - 0.5) * cellmovement, (Math.random() - 0.5) * cellmovement);
+							b.SetLinearVelocity(direction); 
+						}
+						break;                 
 					}
 				}
 			}
@@ -459,15 +589,14 @@
 	      if(isMouseDown) {
 	         var body = getBodyAtMouse();
 	         if(body) {
-				
-				if(body.GetFixtureList().utype === 'rbcharging' && world.bodylist.length === 0){
-					world.bodylist.push(body);
+				if(body.GetFixtureList().utype === 'rbcharging' && world.pathlist.length === 0){
+					world.pathlist.push(body.m_fixtureList);
 					return; 
 				}
 		
-				if(body.canselect && world.bodylist.length > 0){ 
+				if(body.canselect && world.pathlist.length > 0){ 
 					body.canselect = false; 
-					world.bodylist.push(body); 
+					world.pathlist.push(body.m_fixtureList); 
 				    $('#combo').append($('<div>').addClass('combobody').text(body.GetFixtureList().utype));  
 				}
 	         }
@@ -480,8 +609,8 @@
 
 		  currenthbtime += 1;
 			$('#heart').css({
-				width: (Math.sin(((currenthbtime*2)/hbtime) * Math.PI) * 100) + '%' ,
-				height: (Math.sin(((currenthbtime*2)/hbtime) * Math.PI ) * 100) + '%' 
+				width: ((Math.sin(((currenthbtime*2)/hbtime) * Math.PI) * 100)) + '%' ,
+				height: ((Math.sin(((currenthbtime*2)/hbtime) * Math.PI ) * 100)) + '%' 
 			})
 
 		  if(currenthbtime > hbtime){
