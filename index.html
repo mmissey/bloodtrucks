@@ -17,7 +17,7 @@
       width: 100%;
       padding: 5% 3%;
       text-align: center;
-      font-family: 'Original Surfer', cursive;
+      font-family: Arial, sans-serif;
       
     }
 
@@ -28,19 +28,31 @@
     }
 
 	#gameholder{
-		position:relative;
-		display:inline-block;
+		position: relative;
+		display: inline-block;
+		width: 100%;
+		text-align: left;
+		margin-bottom:600px;
+		max-width:1024px;
+		margin: 0 auto 600px auto;
+	}
+	
+	.overlap{
+		position:absolute;
+		width: 100%;
+		max-width: 1024px;
 	}
 
  	#collisioncanvas{
-		border:1px solid red; 
-		width: 100%;
-		max-width: 1024px;
-		margin: 0 auto;     
-		}
+		border:1px solid red;   
+	}
+	#pathcanvas{
+		border: 1px solid blue;  
+	}	
+		
     #game{
-		margin: 100% 0;
-		text-align: center;    
+		text-align: center;
+		display:none;    
     }
 
     #btnHelp{
@@ -76,6 +88,15 @@
 		position:relative;
 		display:inline-block;
 	}
+	
+	#centerzoom{
+		width: 15%;
+		height: 116px;
+		border: 1px solid lime;
+		position: relative;
+		margin: 32% auto;
+		left: 3%;
+	}
     </style>
 
 </head>
@@ -96,7 +117,9 @@
 			<div id="heartholder">
 				<div id="heart"></div>
 			</div>
-			<canvas id="collisioncanvas" width="1200" height="900"></canvas>
+			<canvas id="collisioncanvas" class="overlap"  width="1200" height="900"></canvas>
+			<canvas id="pathcanvas" class="overlap" width="1200" height="900"></canvas>
+			<div id="centerzoom"></div> 
 			<div id="combo"> 
 				
 			</div>
@@ -104,21 +127,48 @@
     </div>
 
 
-	<script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
+	<script src="js/jquery.zoomooz.min.js"></script> 
+	<script> 
+	
+	// $('#centerzoom').on('click', function(e){
+	// 	$(this).zoomTo({targetsize:0.4, duration:600});
+	// 	e.stopPropagation();
+	// 	e.preventDefault();
+	// 	return false;
+	// }).on('zoomout', function(){
+	// 	$('#centerzoom').zoomTarget();
+	// 	
+	// });   
+	
 	if ("ontouchstart" in document.documentElement) { 
 	    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
 	}
-	</script>
-	<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
-	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
-	<script> 
 
 	var hbtime = 100, 
 	currenthbtime = 0,
-	cellmovement = 0.8; 
+	cellmovement = 0.4,
+	celllife = 1000,
+	lifeminus = 0.5,
+	exfoliate = 0.999,
+	celllifevar = 500,
+	vein = {
+		xmin: 12.1,
+		xmax: 16.1,
+		ymin: 8.5,
+		ymax: 11.5,
+		xcenter: 14.1,
+		ycenter: 10
+	},
+	rblife = 1000; 
 	
 	var mouseX, mouseY;
-	var canvasratio = $('#collisioncanvas').attr('width') / $('#collisioncanvas').width();
+	var canvasratio = $('#collisioncanvas').attr('width') / $('#collisioncanvas').width();  
+	
+	function randrange (min, max) {
+	    return Math.random() * (max - min) + min;
+	}
 
 	function init() {
 	   var   b2Vec2 = Box2D.Common.Math.b2Vec2
@@ -148,9 +198,57 @@
 	   fixDef.friction = 0.5;
 	   fixDef.restitution = 0.2;
 
-	   var bodyDef = new b2BodyDef;
+	   var bodyDef = new b2BodyDef;  
+	
+	
+	function randcell(){
+		bodyDef.type = b2Body.b2_dynamicBody;
+		fixDef.shape = new b2CircleShape(
+		  1 //radius
+		);
+		bodyDef.position.x = Math.random() * 20;
+		bodyDef.position.y = Math.random() * 20;
+		while(bodyDef.position.x > vein.xmin && bodyDef.position.x < vein.xmax && bodyDef.position.y > vein.ymin && bodyDef.position.y < vein.ymax){
+			bodyDef.position.x = Math.random() * 20;
+			bodyDef.position.y = Math.random() * 20;
+		}
+		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
+		newthing.utype = 'cell';
+		newthing.m_body.canselect = true; 
+		var thisCellsLife = celllife + (Math.random() * celllifevar);
+		newthing.obj_data = {
+			o2: thisCellsLife,
+			o2max: thisCellsLife
+		}
+		newthing.obj_actions = {
+			celldeath: function(){
+				console.log('celldeath');
+			}
+		}
+	}
+	
+	function newrb(){
+		bodyDef.type = b2Body.b2_dynamicBody;
+		fixDef.shape = new b2CircleShape(
+		  0.4 //radius
+		);
+		bodyDef.position.x = randrange(vein.xmin, vein.xmax);
+		bodyDef.position.y = randrange(vein.ymin, vein.ymax);
 
-	   //create ground
+		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
+		newthing.utype = 'rbcharging';
+		newthing.obj_data = {
+			o2: rblife,
+			o2max: rblife
+		}
+		newthing.obj_actions = {
+			celldeath: function(){
+				console.log('rbdeath');
+			}
+		}
+	}
+
+	   //create borders
 	   bodyDef.type = b2Body.b2_staticBody;
 	   fixDef.shape = new b2PolygonShape;
 	   fixDef.shape.SetAsBox(20, 2);
@@ -168,25 +266,45 @@
 	   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
 		newthing.utype = 'wall';   
 
-		bodyDef.type = b2Body.b2_kinematicBody;
-		fixDef.shape = new b2CircleShape(
-		  1.3 //radius
-		);
-		bodyDef.position.x = 14;
-		bodyDef.position.y = 10;
-		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
-		newthing.utype = 'vein'; 
+		
+		//create vein
+	   bodyDef.type = b2Body.b2_staticBody;
+	   fixDef.shape = new b2PolygonShape;
+			//top bottom walls    
+	fixDef.shape.SetAsBox(2, 0.1);
+	   bodyDef.position.Set(vein.xcenter, vein.ymin);
+	   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'vein';
+			   bodyDef.position.Set(vein.xcenter, vein.ymax);
+			   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'vein';    
+		//left right walls
+			   fixDef.shape.SetAsBox(0.1, 1.6);
+			   	   bodyDef.position.Set(vein.xmin, vein.ycenter); 
+			   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'vein';   
+		   	   bodyDef.position.Set(vein.xmax, vein.ycenter);
+			   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'vein';
+		
+		// //Temporary purple start point
+		// bodyDef.type = b2Body.b2_kinematicBody;
+		// fixDef.shape.SetAsBox(2.12, 1.6);
+		// bodyDef.position.Set(vein.xcenter, vein.ycenter);
+		// newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
+		// newthing.utype = 'vein'; 
+		
+		 		for(var i = 0; i < 4; i++){ 
+		 				newrb();
+		 		}   
+		
 
-		bodyDef.type = b2Body.b2_dynamicBody;
-		for(var i = 0; i < 10; i++){
-			fixDef.shape = new b2CircleShape(
-			  1 //radius
-			);
-			bodyDef.position.x = Math.random() * 20;
-			bodyDef.position.y = Math.random() * 20;
-			newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
-			newthing.utype = 'cell';   
-		}
+		//Draw Cells
+		 		for(var i = 0; i < 10; i++){ 
+		 			setTimeout(function(){
+		 				randcell();
+		 			}, Math.random() * i * 1000); 
+		 		}
 
 
 	   //setup debug draw
@@ -202,7 +320,6 @@
 
 	   //mouse
 	   var mousePVec, isMouseDown, selectedBody;
-	   var canvasPosition = getElementPosition(document.getElementById("collisioncanvas"));
 	   mousecollision = new b2BodyDef;
 	   document.addEventListener("mousedown", function(e) {
 	      isMouseDown = true; 
@@ -231,8 +348,9 @@
 
 	   function handleMouseMove(e) { 
 		
-	      mouseX = ((e.pageX - canvasPosition.x) / 45) * canvasratio;
-	      mouseY = ((e.pageY - canvasPosition.y) / 45) * canvasratio;
+	      mouseX = ((e.pageX - $('#gameholder').position().left) / 45) * canvasratio;
+	      mouseY = ((e.pageY - $('#gameholder').position().top) / 45) * canvasratio;   
+	      console.log(e.x, e.y, $('body').css('webkitTransform'));
 	   };
 
 	   function getBodyAtMouse() {
@@ -265,32 +383,72 @@
 	            for (var f = b.GetFixtureList(); f; f = f.m_next) {
 	                if(f.utype == 'cell'){
 						b.SetAwake(true);
-						if(Math.random() > 0.5){
-							b.SetLinearVelocity(new b2Vec2((Math.random() - 0.5) * cellmovement),0); 
+						if(Math.random() > 0.5){ 
+							var direction = new b2Vec2((Math.random() - 0.5) * cellmovement, (Math.random() - 0.5) * cellmovement);
+							b.SetLinearVelocity(direction); 
 						}                 
 					}
 				}
 			}
 	   }
+	
+   	  function gamestep(){
+			for (var b = world.m_bodyList; b; b = b.m_next) {
+				var xf = b.m_xf;
+	            for (var f = b.GetFixtureList(); f; f = f.m_next) {
+	               	switch(f.utype){
+						case 'cell':
+             			f.obj_data.o2 -= lifeminus;  
+						if(f.obj_data.o2 < 0){
+
+							bodyDef.type = b2Body.b2_staticBody;
+   							fixDef.shape = new b2CircleShape(
+							  0.9 //radius
+							);
+							bodyDef.position.x = xf.position.x;
+							bodyDef.position.y = xf.position.y;
+							newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
+							newthing.utype = 'deadcell'; 
+							
+							f.obj_actions.celldeath();   
+							world.DestroyBody(b);
+						}
+						break;
+						case 'deadcell':
+							 
+							var shape = f.GetShape(); 
+                            shape.SetRadius(shape.GetRadius() * exfoliate);
+							if(shape.GetRadius() < 0.1){
+								world.DestroyBody(b); 
+								console.log('exfoliate');
+							}
+
+						break;
+					}
+				}
+			}	
+		}
 
 	   function update() {
 
 	      if(isMouseDown) {
 	         var body = getBodyAtMouse();
 	         if(body) {
-				if(body.canselect){ 
-					if(world.bodylist.length === 0 && body.GetFixtureList().utype !== 'vein'){
-						isMouseDown = false;
-						return false;
-					}
-					
+				
+				if(body.GetFixtureList().utype === 'rbcharging' && world.bodylist.length === 0){
+					world.bodylist.push(body);
+					return; 
+				}
+		
+				if(body.canselect && world.bodylist.length > 0){ 
 					body.canselect = false; 
 					world.bodylist.push(body); 
 				    $('#combo').append($('<div>').addClass('combobody').text(body.GetFixtureList().utype));  
 				}
 	         }
 	      }
-
+          
+		  gamestep();
 	      world.Step(1 / 60, 10, 10);
 	      world.DrawDebugData();
 	      world.ClearForces();  
@@ -304,45 +462,18 @@
 		  if(currenthbtime > hbtime){
 			currenthbtime = 0;
 			heartbeat();
-		}
+			}
 	   };
-
-	   //helpers
-
-	   //http://js-tut.aardon.de/js-tut/tutorial/position.html
-	   function getElementPosition(element) {
-	      var elem=element, tagname="", x=0, y=0;
-
-	      while((typeof(elem) == "object") && (typeof(elem.tagName) != "undefined")) {
-	         y += elem.offsetTop;
-	         x += elem.offsetLeft;
-	         tagname = elem.tagName.toUpperCase();
-
-	         if(tagname == "BODY")
-	            elem=0;
-
-	         if(typeof(elem) == "object") {
-	            if(typeof(elem.offsetParent) == "object")
-	               elem = elem.offsetParent;
-	         }
-	      }
-
-	      return {x: x, y: y};
-	   }
-
 
 	};
 	</script>
 	<script type="text/javascript">
-	        $('html, body').animate({
-	                 scrollTop: 0
-	            }, 'slow');
+
 	        $("#btnPlay").on("click", function(){
 	            init();
 
-	             $('html, body').animate({
-	                 scrollTop: $('#game').offset().top-20
-	            }, 'slow');
+                $('#menu').hide();
+				$('#game').show();
 	        });
 
 	    </script>
