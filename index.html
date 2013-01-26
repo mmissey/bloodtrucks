@@ -127,6 +127,7 @@
 				<div id="heart"></div>
 			</div>
 			<canvas id="collisioncanvas" class="overlap"  width="1200" height="900"></canvas>
+			<canvas id="imgCanvas" class="overlap" width="1200" height="900"></canvas>
 			<canvas id="pathcanvas" class="overlap" width="1200" height="900"></canvas>
 			<div id="centerzoom"></div> 
 			<div id="combo"> 
@@ -167,7 +168,17 @@
 		xcenter: 14.1,
 		ycenter: 10
 	},
-	rblife = 1000; 
+	rblife = 1000,
+	images = {},
+	assets = {
+		'rbCell' 	 : 'http://www.placekitten.com/125/125',
+		'fullCell' :  'img/cell2animationexport.png',
+		'halfCell' : 'http://www.placekitten.com/75/75',
+		'deadCell' : 'http://www.placekitten.com/110/110',
+		'heart'		 : 'http://www.placekitten.com/110/110',
+		'vein'		 : 'http://www.placekitten.com/10/110',
+		'wall'		 : 'http://www.placekitten.com/10/110'
+	}; 
 	
 	var mouseX, mouseY;
 	var canvasratio = $('#collisioncanvas').attr('width') / $('#collisioncanvas').width();  
@@ -176,7 +187,15 @@
 	    return Math.random() * (max - min) + min;
 	}
 
+	function loadImages(){
+		$.each(assets, function(name, url){
+			images[name] = new Image();
+			images[name].src = url;
+		});
+	}
+
 	function init() {
+		loadImages();
 	   var   b2Vec2 = Box2D.Common.Math.b2Vec2
 	      ,  b2AABB = Box2D.Collision.b2AABB
 	   	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
@@ -456,7 +475,7 @@
           
 		  gamestep();
 	      world.Step(1 / 60, 10, 10);
-	      world.DrawDebugData();
+	      world.DrawLiveData();
 	      world.ClearForces();  
 
 		  currenthbtime += 1;
