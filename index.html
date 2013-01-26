@@ -11,6 +11,15 @@
     <link href='http://fonts.googleapis.com/css?family=Original+Surfer' rel='stylesheet' type='text/css'>
     <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
     <style>
+
+    #game{
+    	-webkit-touch-callout: none;
+				-webkit-user-select: none;
+				-khtml-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+    }
     #menu{
       display: block;
       height: 100%;
@@ -142,9 +151,6 @@
 	// 	
 	// });   
 	
-	if ("ontouchstart" in document.documentElement) { 
-	    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
-	}
 
 	var hbtime = 100, 
 	currenthbtime = 0,
