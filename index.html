@@ -127,6 +127,37 @@
 		-webkit-transform-origin: 50% 50%; 
 	}
 
+#options h3{
+		font-size: 4em;
+		text-align: center;
+}
+#options table{
+	width: 500px;
+height: 300px;
+margin: 0 auto;
+font-size: 2em;
+}
+#options input{
+	font-size: 20px;
+width: 50px;
+}
+
+#options{
+	font-family: helvetica;
+	border: 1px solid #000;
+	width: 1200px;
+	height: 900px;
+	margin: 0 auto;
+	padding: 0;
+}
+#optStart{
+width: 200px;
+height: 50px;
+font-size: 2em;
+line-height: 45px;
+text-align: center;
+margin: 100px auto;
+}
 	#border{
 		background: url('img/border.png');
 		width: 100%;
@@ -150,7 +181,7 @@
         <h1 id="title">BLOODTRUCKS</h1>
         <ul>
             <li id="btnPlay">Play</li>
-            <li id="btnHelp">Help</li>
+            <li id="btnOpts">Options</li>
         </ul>
     </div>
 
@@ -172,7 +203,18 @@
 		<div>Total Cells: <span id="maxlive">0</span></div>
 		<div>Health Grade: <span id="grade">A</span></div>
     </div>
-
+    <div id="options">
+    	<h3>Options</h3>
+    	<table>
+    		<tr><td>Starting Cells</td><td><input value="10" id="numCell" type="text"></input></td></tr>
+    		<tr><td>Cell Movement</td><td><input value="10" id="cellMovement" type="text"></input></td></tr>
+ 				<tr><td>Starting Red Blood Cells</td><td><input value="8" id="numRB" type="text"></input></td></tr>
+    		<tr><td>Red Blood Cell Movement</td><td><input value="6" id="rbMovement" type="text"></input></td></tr>
+    		<tr><td>New Cell # Beats</td><td><input value="20" id="newCellBeat" type="text"></input></td></tr>
+    		<tr><td>Life Minus per tick</td><td><input value="0.5" id="lifeMinus" type="text"></input></td></tr>
+    	</table>
+    	<div id="optStart" onclick="setVars();"> Start </div>
+    </div>
     <div id="gameover">
     	<h2>YOU DIED</h2>
     	<h4>You carried ## Oxygen</h4>
@@ -186,6 +228,44 @@
 	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
 	<script src="js/jquery.zoomooz.min.js"></script> 
 	<script> 
+
+	var hbtime = 100, 
+	currenthbtime = 0,
+	currentbeat = 0,
+	newcellbeat = 20,
+	cellmovement = 10,
+	celllife = 1000,
+	lifeminus = 0.5,
+	exfoliate = 0.999,
+	celllifevar = 500,
+	vein = {
+		xmin: 12.1,
+		xmax: 16.1,
+		ymin: 8.5,
+		ymax: 11.5,
+		xcenter: 14.1,
+		ycenter: 10
+	},
+	rblife = 1000,
+	cellsize = 1,
+	rbmovement = 6,
+	objectid = 0,
+	redcellstart = 8,
+	cellstart = 10,
+	warningflash = 0.25,
+	cellrepulse = 1.7; 
+
+	function setVars(){
+		cellmovement = parseInt($('#cellMovement').val());
+		cellstart = parseInt($('#numCell').val());
+		rbmovement = parseInt($('#cellMovement').val());
+		redcellstart = parseInt($('#numRB').val());
+		newcellbeat = parseInt($('#newCellBeat').val());
+		lifeminus = parseInt($('#lifeMinus').val());
+		init();
+		$('#options').hide();
+		$('#game').show();
+	}
 	document.ontouchmove = function(event){
 	    event.preventDefault();
 	}
@@ -205,31 +285,6 @@
 	// 	
 	// });    
 
-	var hbtime = 100, 
-	currenthbtime = 0,
-	currentbeat = 0,
-	newcellbeat = 20,
-	cellmovement = 2,
-	celllife = 1000,
-	lifeminus = 0.5,
-	exfoliate = 0.999,
-	celllifevar = 500,
-	vein = {
-		xmin: 12.1,
-		xmax: 16.1,
-		ymin: 8.5,
-		ymax: 11.5,
-		xcenter: 14.1,
-		ycenter: 10
-	},
-	rblife = 1000,
-	cellsize = 1,
-	rbmovement = 6,
-	objectid = 0,
-	redcellstart = 4,
-	cellstart = 10,
-	warningflash = 0.25,
-	cellrepulse = 1.7; 
 	
 	var cats = {
 		walls: 0x0001,
@@ -820,7 +875,10 @@ function animategrade(a){
                 $('#menu').hide();
 				$('#game').show();
 	        });
-
+	        $('#btnOpts').on('click', function(){
+	        		$('#menu').hide();
+	        		$('#options').show();
+	        });
 			</script>
 </body>
 </html>
