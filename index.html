@@ -55,6 +55,7 @@ body{
 		margin: 0 auto;
 		-webkit-transform-origin: 50% 50%;
 		overflow: hidden;
+
 	}
 	
 	.overlap{
@@ -119,7 +120,9 @@ body{
 		width: 100%;
 		height: 100%;
 		background-size: cover; 
-		-webkit-transform-origin: 50% 50%;  
+		-webkit-transform-origin: 50% 50%; 
+		-webkit-transition: all 1s ease; 
+		-webkit-filter: brightness(0%); 
 	}
 
 	#artery{
@@ -204,10 +207,12 @@ margin: 100px auto;
 				<div id="heart"></div>
 			</div>
 		</div> 
-		<div>Currently Alive: <span id="currentalive">0</span></div>
-		<div>Total Died: <span id="cellsdied">0</span></div> 
-		<div>Total Cells: <span id="maxlive">0</span></div>
-		<div>Health Grade: <span id="grade">A</span></div>
+		<div style="display:none">
+			<div>Currently Alive: <span id="currentalive">0</span></div>
+			<div>Total Died: <span id="cellsdied">0</span></div> 
+			<div>Total Cells: <span id="maxlive">0</span></div>
+			<div>Health Grade: <span id="grade">0</span></div>   
+		</div>
     </div>
     <div id="options">
     	<h3>Options</h3>
@@ -232,7 +237,7 @@ margin: 100px auto;
 
 	<script src="js/jquery.js"></script>
 	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
-	<script src="js/jquery.zoomooz.min.js"></script> 
+	<script src="js/jquery.zoomooz.min.js"></script>
 	<script> 
 
 	var hbtime = 100, 
@@ -369,7 +374,9 @@ function getFrame(){
 
 }
 
-function animategrade(a){
+function animategrade(a){  
+	
+	if(failed) return;
 	    if(a === undefined){
 		a = 0;
 	}
@@ -388,6 +395,10 @@ function animategrade(a){
 					grade = Math.round(this.grade);
 					$('#grade').text(Math.round(this.grade) + '%'); 
 					
+					if( !isNaN(this.grade) )
+					$('#background').css({
+						'-webkit-filter': ['brightness(',-(100 - (this.grade)),'%)'].join('')
+					});
 
 					if(grade < 50){
 						failed = true;
@@ -749,10 +760,9 @@ function animategrade(a){
 	   }
 
 	   //update 
-
 	   function heartbeat(){
-			currentbeat+=1; 
-			
+			currentbeat+=1;  
+
 			rbmovement = rbmovement * 1.006;
 			cellmovement = cellmovement * 1.006;
 			lifeminus = lifeminus * 1.006; 
@@ -763,7 +773,10 @@ function animategrade(a){
 			} 
 			
 			if(failed){
-				document.getElementById('border').style.webkitAnimationPlayState = 'paused';  
+				document.getElementById('border').style.webkitAnimationPlayState = 'paused'; 
+				$('#background').css({
+					'-webkit-filter': ['brightness(0%)'].join('')
+				}); 
 			}
 		
 			for (var b = world.m_bodyList; b; b = b.m_next) {
@@ -915,7 +928,9 @@ function animategrade(a){
 	        $('#btnOpts').on('click', function(){
 	        		$('#menu').hide();
 	        		$('#options').show();
-	        });
+	        }); 
+	
+	
 			</script>
 </body>
 </html>
