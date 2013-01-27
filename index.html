@@ -11,15 +11,20 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <link href='http://fonts.googleapis.com/css?family=Original+Surfer' rel='stylesheet' type='text/css'>
     <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
-    <style>
+    <style> 
+
+body{
+	-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+}
 
     #game{
-    	-webkit-touch-callout: none;
-				-webkit-user-select: none;
-				-khtml-user-select: none;
-				-moz-user-select: none;
-				-ms-user-select: none;
-				user-select: none;
+
+				position:relative;
     }
     #menu{
       display: block;
@@ -180,7 +185,8 @@ margin: 100px auto;
 		height: 100%;
 		background-size: cover;
 		-webkit-transform-origin: 50% 50%;  
-		-webkit-animation: pulse 1s alternate infinite ease-out;
+		-webkit-animation: pulse alternate 1s infinite ease-out;   
+		-webkit-transition: 0.5s ease all;
 	} 
 	#stats{
 		width: 500px;
@@ -255,8 +261,8 @@ margin: 100px auto;
 	var hbtime = 100, 
 	currenthbtime = 0,
 	currentbeat = 0,
-	newcellbeat = 20,
-	cellmovement = 10,
+	newcellbeat = 5,
+	cellmovement = 2,
 	celllife = 1000,
 	lifeminus = 0.5,
 	exfoliate = 0.999,
@@ -273,10 +279,12 @@ margin: 100px auto;
 	cellsize = 1,
 	rbmovement = 6,
 	objectid = 0,
-	redcellstart = 8,
-	cellstart = 10,
+	redcellstart = 4,
+	cellstart = 4,
 	warningflash = 0.25,
-	cellrepulse = 1.7; 
+	cellrepulse = 1.7,
+	grade = 100,
+	failed = false; 
 
 	function setVars(){
 		cellmovement = parseInt($('#cellMovement').val());
@@ -409,7 +417,13 @@ function animategrade(a){
 					$('#grade').text(Math.round(this.grade) + '%'); 
 				},
 				complete: function(){  
-					$('#grade').text(Math.round(this.grade) + '%');
+					grade = Math.round(this.grade);
+					$('#grade').text(Math.round(this.grade) + '%'); 
+					
+
+					if(grade < 50){
+						failed = true;
+					}
 				}
 			}, 1000);   
 		}
@@ -507,7 +521,7 @@ function gameover(){
 		bodyDef.type = b2Body.b2_dynamicBody;
 		fixDef.shape = new b2CircleShape(
 		  0.01 //radius
-		);
+		); 
 		fixDef.filter.categoryBits = cats.cells;
 		fixDef.filter.maskBits = cats.walls | cats.veins | cats.arbs | cats.cells;
 		
@@ -577,7 +591,8 @@ function gameover(){
 		fixDef.shape = new b2CircleShape(
 		  0.4 //radius
 		);
-		fixDef.isSensor = false;
+		fixDef.isSensor = false;  
+		fixDef.density = 5;
 		fixDef.filter.categoryBits = cats.rbs;
 		fixDef.filter.maskBits = cats.rbs | cats.veins;
 		bodyDef.position.x = randrange(vein.xmin, vein.xmax);
@@ -594,7 +609,7 @@ function gameover(){
       'height': 256,
       'width': 256,
 			'frames': 12,
-			'currentFrame': 0,
+			'currentFrame': ~~(Math.random() * 12),
 			'framerate': 20,
 			'current': 0,
 			'direction': 1
@@ -604,6 +619,7 @@ function gameover(){
 				console.log('rbdeath');
 			}
 		}
+		fixDef.density = 1;
 	}
 
 	   //create borders
@@ -772,11 +788,19 @@ function gameover(){
 	   //update 
 
 	   function heartbeat(){
-			currentbeat+=1;
-			if(currentbeat >= newcellbeat){
-				newcellbeat = 10; 
+			currentbeat+=1; 
+			
+			rbmovement = rbmovement * 1.006;
+			cellmovement = cellmovement * 1.006;
+			lifeminus = lifeminus * 1.006; 
+			
+			if(currentbeat >= newcellbeat && !failed){
 				currentbeat = 0;
 				randcell();
+			} 
+			
+			if(failed){
+				document.getElementById('border').style.webkitAnimationPlayState = 'paused';  
 			}
 		
 			for (var b = world.m_bodyList; b; b = b.m_next) {
@@ -785,6 +809,18 @@ function gameover(){
 	                switch(f.utype){
 						case 'cell':
 						b.SetAwake(true);
+						if(failed){
+						var direction = new b2Vec2(
+							(xf.position.x - destination.m_body.m_xf.position.x) * 45, 
+							(xf.position.y - destination.m_body.m_xf.position.y) * 45);
+							direction.Normalize();
+							direction.Multiply(18);
+						b.SetLinearVelocity(direction); 
+						f.m_filter.maskBits = 0;
+						continue; 
+						
+						}
+						
 						if(Math.random() > 0.5){ 
 						//	if(life < warningflash){
 							//	var direction = new b2Vec2((destination.m_body.m_xf.position.x - b.m_xf.position.x)*45, (destination.m_body.m_xf.position.y- b.m_xf.position.y)*45);
@@ -834,6 +870,7 @@ function gameover(){
 	            for (var f = b.GetFixtureList(); f; f = f.m_next) {
 	               	switch(f.utype){
 						case 'cell': 
+						
 						cells += 1;
              			f.obj_data.o2 -= lifeminus;  
 						if(f.m_shape.m_radius < cellsize){
