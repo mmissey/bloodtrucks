@@ -133,7 +133,7 @@
 		height: 100%;
 		background-size: cover;
 		-webkit-transform-origin: 50% 50%;  
-		-webkit-animation: pulse 1s alternate infinite;
+		-webkit-animation: pulse 1s alternate infinite ease-out;
 	} 
 	
 	@-webkit-keyframes pulse {
@@ -705,7 +705,7 @@ function getFrame(){
 						case 'cell':
              			f.obj_data.o2 -= lifeminus;  
 						if(f.m_shape.m_radius < cellsize){
-							f.m_shape.m_radius += 0.1;
+							f.m_shape.m_radius += 0.05;
 						}
 						if(f.obj_data.o2 < 0){
 
