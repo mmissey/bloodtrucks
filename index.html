@@ -117,9 +117,6 @@
 
 
 <body>
-	
-	<!-- <canvas id="try" height="800" width="800" style="border: 1px solid green;"></canvas> 
-    <div type="button" onclick="essay()">Try</div>  -->
 
     <div id="menu" class="step slide">
         <h1 id="title">BLOODTRUCKS</h1>
@@ -156,23 +153,15 @@
 	<script src="js/jquery.zoomooz.min.js"></script> 
 	<script>  
 	loadImages('img/cell2animationexport.png', 'cell');
-	// $('#centerzoom').on('click', function(e){
-	// 	$(this).zoomTo({targetsize:0.4, duration:600});
-	// 	e.stopPropagation();
-	// 	e.preventDefault();
-	// 	return false;
-	// }).on('zoomout', function(){
-	// 	$('#centerzoom').zoomTarget();
-	// 	
-	// });  
-	
-	// function essay(){
-	// 	var ctx = document.getElementById('try').getContext('2d');
-	// 	ctx.drawImage(document.getElementById('grcell'), 0, 0, 800, 800, 0, 0, 400, 400); 
-	// 	ctx.globalAlpha = 0.5;
-	// 	ctx.drawImage(document.getElementById('cell'), 0, 0, 800, 800, 0, 0, 400, 400); 
-	// 	ctx.globalAlpha = 1;
-	// };    
+	$('#centerzoom').on('click', function(e){
+		$(this).zoomTo({targetsize:0.4, duration:600});
+		e.stopPropagation();
+		e.preventDefault();
+		return false;
+	}).on('zoomout', function(){
+		$('#centerzoom').zoomTarget();
+		
+	});    
 
 	var hbtime = 100, 
 	currenthbtime = 0,
@@ -192,16 +181,7 @@
 		ycenter: 10
 	},
 	rblife = 1000,
-	images = {},
-	assets = {
-		'rbCell' 	 : 'http://www.placekitten.com/200/200',
-		'fullCell' :  'img/cell2animationexport.png',
-		'halfCell' : 'http://www.placekitten.com/75/75',
-		'deadCell' : 'http://www.placekitten.com/110/110',
-		'heart'		 : 'http://www.placekitten.com/110/110',
-		'vein'		 : 'http://www.placekitten.com/10/110',
-		'wall'		 : 'http://www.placekitten.com/10/110'
-	}; 
+	cellsize = 1,
 	rbmovement = 6,
 	objectid = 0,
 	redcellstart = 4,
@@ -360,7 +340,7 @@
 	function randcell(){
 		bodyDef.type = b2Body.b2_dynamicBody;
 		fixDef.shape = new b2CircleShape(
-		  1 //radius
+		  0.01 //radius
 		);
 		fixDef.filter.categoryBits = cats.cells;
 		fixDef.filter.maskBits = cats.walls | cats.veins | cats.arbs | cats.cells;
@@ -635,6 +615,9 @@
 	               	switch(f.utype){
 						case 'cell':
              			f.obj_data.o2 -= lifeminus;  
+						if(f.m_shape.m_radius < cellsize){
+							f.m_shape.m_radius += 0.1;
+						}
 						if(f.obj_data.o2 < 0){
 
 							bodyDef.type = b2Body.b2_staticBody;
