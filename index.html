@@ -197,7 +197,11 @@ margin: 100px auto;
 			<div id="heartholder">
 				<div id="heart"></div>
 			</div>
-		</div>
+		</div> 
+		<div>Currently Alive: <span id="currentalive">0</span></div>
+		<div>Total Died: <span id="cellsdied">0</span></div> 
+		<div>Total Cells: <span id="maxlive">0</span></div>
+		<div>Health Grade: <span id="grade">A</span></div>
     </div>
     <div id="options">
     	<h3>Options</h3>
@@ -357,6 +361,30 @@ function getFrame(){
 
 }
 
+function animategrade(a){
+	    if(a === undefined){
+		a = 0;
+	}
+		
+		var cells = parseInt($('#currentalive').text()); 
+		var maxcells = cells + parseInt($('#cellsdied').text());
+
+		if( (cells / maxcells).toFixed(2) * 100 !== parseInt($('#grade').text())){
+			$({'grade': parseInt($('#grade').text())}).animate({
+				'grade': (cells / maxcells).toFixed(2) * 100
+			}, {
+				step: function(){
+					$('#grade').text(Math.round(this.grade) + '%'); 
+				},
+				complete: function(){  
+					$('#grade').text(Math.round(this.grade) + '%');
+				}
+			}, 1000);   
+		}
+
+			$('#maxlive').text(maxcells + a);
+}
+
 	function init() {
 	   var   b2Vec2 = Box2D.Common.Math.b2Vec2
 	      ,  b2AABB = Box2D.Collision.b2AABB
@@ -498,9 +526,13 @@ function getFrame(){
 		objectid ++;
 		newthing.obj_actions = {
 			celldeath: function(){
-				console.log('celldeath');
+				$('#cellsdied').text(parseInt($('#cellsdied').text()) + 1);  
+				
+				animategrade(0);
 			}
 		};
+		
+		animategrade(1);
 	}
 	
 	function newrb(){
@@ -751,12 +783,15 @@ function getFrame(){
 			}
 	   }
 	
-   	  function gamestep(){
+   	  function gamestep(){ 
+			var cells = 0;
+	
 			for (var b = world.m_bodyList; b; b = b.m_next) {
 				var xf = b.m_xf;
 	            for (var f = b.GetFixtureList(); f; f = f.m_next) {
 	               	switch(f.utype){
-						case 'cell':
+						case 'cell': 
+						cells += 1;
              			f.obj_data.o2 -= lifeminus;  
 						if(f.m_shape.m_radius < cellsize){
 							f.m_shape.m_radius += 0.05;
@@ -788,7 +823,9 @@ function getFrame(){
 						break;
 					}
 				}
-			}	
+			}
+			
+			$('#currentalive').text(cells);  
 		}
 
 	   function update() {
