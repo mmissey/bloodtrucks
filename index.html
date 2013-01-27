@@ -152,7 +152,7 @@
 	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
 	<script src="js/jquery.zoomooz.min.js"></script> 
 	<script>  
-			loadImages();
+			loadImages('img/cell2animationexport.png', 'cell');
 	// $('#centerzoom').on('click', function(e){
 	// 	$(this).zoomTo({targetsize:0.4, duration:600});
 	// 	e.stopPropagation();
@@ -230,16 +230,37 @@
 	    return str;
 	}
 
-	function loadImages(){
-		$('<img>').attr('src', 'img/cell2animationexport.png').on('load', function(){
-			var canvas = $('<canvas>').attr('id', 'cells').attr({
+	function loadImages(src, id){ 
+		
+		$('<img>').attr('src', src).on('load', function(){
+			var canvas = $('<canvas>').attr('id', id).attr({
 				height: this.height,
 				width: this.width
 			})[0];
 			
 			canvas.getContext('2d').drawImage(this, 0, 0);
+			$(canvas).appendTo('#imghold');  
 			
-			$(canvas).appendTo('#imghold');
+			var graycanvas = $('<canvas>').attr('id', 'gr'+id).attr({
+					height: this.height,
+					width: this.width
+				})[0];				
+			
+			ctx = graycanvas.getContext('2d');
+			ctx.drawImage(this, 0, 0); 
+			var pixels = ctx.getImageData(0,0,graycanvas.width, graycanvas.height); 
+			
+			var d = pixels.data;
+			for (var i=0; i	<  d.length; i	+=	4) {
+			    var r = d[i];
+			    var g = d[i+1];
+			    var b = d[i+2];
+			    var v = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+			    d[i] = d[i+1] = d[i+2] = v; 
+					  	}        
+
+			ctx.putImageData(pixels, 0, 0);
+			$(graycanvas).appendTo('#imghold');   
 		});
 		
 		
