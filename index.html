@@ -58,6 +58,11 @@ body{
 
 	}
 	
+	#tryagain{
+		padding: 25px;
+		color: #0066AA;
+	}
+
 	.overlap{
 		position:absolute;
 		width: 100%;
@@ -113,6 +118,17 @@ body{
 
 	#gameover{
 		display: none;
+		background: url('img/background.png');
+		width: 100%;
+		height: 100%;
+		background-size: cover; 
+		min-height: 900px;
+min-width: 1024px;
+text-align: center;
+font-family: helvetica;
+padding-top: 50px;
+font-size: 40px;
+
 	}
 
 	#background{
@@ -122,7 +138,7 @@ body{
 		background-size: cover; 
 		-webkit-transform-origin: 50% 50%; 
 		-webkit-transition: all 1s ease; 
-		-webkit-filter: brightness(0%); 
+		-webkit-filter: contrast(100%); 
 	}
 
 	#artery{
@@ -175,7 +191,13 @@ margin: 100px auto;
 		-webkit-animation: pulse alternate 1s infinite ease-out;   
 		-webkit-transition: 0.5s ease all;
 	} 
-	
+	#stats{
+		width: 500px;
+		margin: 0 auto;
+		border: 2px solid #000000;
+		padding: 15px;
+		font-family: helvetica;
+	}
 	@-webkit-keyframes pulse {
 	  0%   { -webkit-transform: scale(1); }
 	  100% { -webkit-transform: scale(1.05); }
@@ -206,12 +228,12 @@ margin: 100px auto;
 			<div id="heartholder">
 				<div id="heart"></div>
 			</div>
-		</div> 
-		<div style="display:none">
+		</div>
+		<div id="stats" style="display:none">
 			<div>Currently Alive: <span id="currentalive">0</span></div>
 			<div>Total Died: <span id="cellsdied">0</span></div> 
 			<div>Total Cells: <span id="maxlive">0</span></div>
-			<div>Health Grade: <span id="grade">0</span></div>   
+			<div>Health Grade: <span id="grade">A</span></div>     
 		</div>
     </div>
     <div id="options">
@@ -227,9 +249,8 @@ margin: 100px auto;
     	<div id="optStart" onclick="setVars();"> Start </div>
     </div>
     <div id="gameover">
-    	<h2>YOU DIED</h2>
-    	<h4>You carried ## Oxygen</h4>
-    	<button>Try Again</button>
+    	<h2>You lost!</h2>
+    	<div id="tryagain" onclick="tryAgain();">Try Again?</div>
     </div>  
 
 	<div id="imghold" style="display:none">
@@ -279,6 +300,11 @@ margin: 100px auto;
 		$('#options').hide();
 		$('#game').show();
 	}
+
+	function tryAgain(){
+		location.reload();
+	}
+
 	document.ontouchmove = function(event){
 	    event.preventDefault();
 	}
@@ -397,11 +423,14 @@ function animategrade(a){
 					
 					if( !isNaN(this.grade) )
 					$('#background').css({
-						'-webkit-filter': ['brightness(',-(100 - (this.grade)),'%)'].join('')
+						'-webkit-filter': ['contrast(',(100 + ((10 - (this.grade/10))*3.4)),'%)'].join('')
 					});
 
 					if(grade < 50){
 						failed = true;
+						setTimeout(function(){
+							gameover();
+						},2000);
 					}
 				}
 			}, 1000);   
@@ -409,8 +438,13 @@ function animategrade(a){
 
 			$('#maxlive').text(maxcells + a);
 }
-
+function gameover(){
+	$('#game').hide();
+	$("#gameover").append($("#stats").clone().show());
+	$('#gameover').show();
+}
 	function init() {
+		$('#options').hide();
 	   var   b2Vec2 = Box2D.Common.Math.b2Vec2
 	      ,  b2AABB = Box2D.Collision.b2AABB
 	   	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
@@ -775,7 +809,7 @@ function animategrade(a){
 			if(failed){
 				document.getElementById('border').style.webkitAnimationPlayState = 'paused'; 
 				$('#background').css({
-					'-webkit-filter': ['brightness(0%)'].join('')
+					'-webkit-filter': ['contrast(100%)'].join('')
 				}); 
 			}
 		
@@ -798,8 +832,14 @@ function animategrade(a){
 						}
 						
 						if(Math.random() > 0.5){ 
-							var direction = new b2Vec2((Math.random() - 0.5) * cellmovement, (Math.random() - 0.5) * cellmovement);
+						//	if(life < warningflash){
+							//	var direction = new b2Vec2((destination.m_body.m_xf.position.x - b.m_xf.position.x)*45, (destination.m_body.m_xf.position.y- b.m_xf.position.y)*45);
+						//	}else{
+								var direction = new b2Vec2((Math.random() - 0.5) * cellmovement, (Math.random() - 0.5) * cellmovement);
+							//}
+							direction.Normalize();
 							b.SetLinearVelocity(direction); 
+
 						}
 						break;
 						case 'rbmoving': 
@@ -910,7 +950,7 @@ function animategrade(a){
 			// 	'-webkit-transform':  ['scale(', (1+ Math.sin((currenthbtime/hbtime)* Math.PI) * 0.05).toFixed(2), ')'].join('')
 			// });	    	
 
-		  if(currenthbtime > hbtime){
+		  if(currenthbtime > hbtime && !failed){
 			currenthbtime = 0;
 			heartbeat();
 			}
