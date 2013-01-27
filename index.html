@@ -111,6 +111,26 @@
 		display: none;
 	}
 
+	#background{
+		background: url('img/background.png');
+		width: 1200px;
+		height: 768px;
+		background-size: cover;
+	}
+
+	#artery{
+		background: url('img/artery.png');
+		width: 1200px;
+		height: 768px;
+		background-size: cover;
+	}
+
+	#border{
+		background: url('img/border.png');
+		width: 1200px;
+		height: 768px;
+		background-size: cover;
+	}
     </style>
 
 </head>
@@ -131,6 +151,9 @@
 			<div id="heartholder">
 				<div id="heart"></div>
 			</div>
+			<div id="background" class="overlap"  width="1200" height="900"></div>
+			<div id="artery" class="overlap"  width="1200" height="900"></div>
+			<div id="border" class="overlap"  width="1200" height="900"></div>
 			<canvas id="collisioncanvas" class="overlap"  width="1200" height="900"></canvas>
 			<canvas id="imgCanvas" class="overlap" width="1200" height="900"></canvas>
 			<canvas id="pathcanvas" class="overlap" width="1200" height="900"></canvas>
