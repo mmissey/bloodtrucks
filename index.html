@@ -101,7 +101,6 @@
 	#centerzoom{
 		width: 15%;
 		height: 116px;
-		border: 1px solid lime;
 		position: relative;
 		margin: 32% auto;
 		left: 3%;
@@ -122,7 +121,9 @@
 		background: url('img/artery.png');
 		width: 1200px;
 		height: 768px;
-		background-size: cover;
+		background-size: 24%;
+		background-repeat: no-repeat;
+		background-position: 54% 51%;
 	}
 
 	#border{
@@ -148,9 +149,6 @@
 
     <div id="game" class="step" data-x="0" data-y="0" data-scale="4">
 		<div id="gameholder">
-			<div id="heartholder">
-				<div id="heart"></div>
-			</div>
 			<div id="background" class="overlap"  width="1200" height="900"></div>
 			<div id="artery" class="overlap"  width="1200" height="900"></div>
 			<div id="border" class="overlap"  width="1200" height="900"></div>
@@ -158,7 +156,9 @@
 			<canvas id="imgCanvas" class="overlap" width="1200" height="900"></canvas>
 			<canvas id="pathcanvas" class="overlap" width="1200" height="900"></canvas>
 			<div id="centerzoom"></div> 
-			<div id="combo"></div>
+			<div id="heartholder">
+				<div id="heart"></div>
+			</div>
 		</div>
     </div>
 
@@ -178,16 +178,15 @@
 	loadImages('img/cell2animationexport.png', 'cell');
 	loadImages('img/hemo.png', 'hemo');
 
-	
-	$('#centerzoom').on('click', function(e){
-		$(this).zoomTo({targetsize:0.4, duration:600});
-		e.stopPropagation();
-		e.preventDefault();
-		return false;
-	}).on('zoomout', function(){
-		$('#centerzoom').zoomTarget();
-		
-	});    
+	// $('#centerzoom').on('click', function(e){
+	// 	$(this).zoomTo({targetsize:0.4, duration:600});
+	// 	e.stopPropagation();
+	// 	e.preventDefault();
+	// 	return false;
+	// }).on('zoomout', function(){
+	// 	$('#centerzoom').zoomTarget();
+	// 	
+	// });    
 
 	var hbtime = 100, 
 	currenthbtime = 0,
@@ -195,7 +194,7 @@
 	newcellbeat = 20,
 	cellmovement = 2,
 	celllife = 1000,
-	lifeminus = 0.5,
+	lifeminus = 1,
 	exfoliate = 0.999,
 	celllifevar = 500,
 	vein = {
@@ -406,6 +405,15 @@ function getFrame(){
 			o2max: thisCellsLife,
 			id: objectid
 		};
+		newthing.anim_data = {
+            'height': 512,
+            'width': 512,
+			'frames': 6,
+			'currentFrame': 0,
+			'framerate': 20,
+			'current': 0,
+			'direction': 1
+		}
 		objectid ++;
 		newthing.obj_actions = {
 			celldeath: function(){
@@ -700,7 +708,7 @@ function getFrame(){
 		  gamestep();
 	      world.Step(1 / 60, 10, 10);
 		  world.DrawLiveData(); 
-		  world.DrawDebugData();
+		//  world.DrawDebugData();
 	      world.ClearForces();  
 
 		  currenthbtime += 1;
