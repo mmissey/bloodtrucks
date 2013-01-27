@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=1024" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>Blood Trucks</title>
+    <title>Hemoglobbin'</title>
 
     <link rel="shortcut icon" href="favicon.png" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <link href='http://fonts.googleapis.com/css?family=Original+Surfer' rel='stylesheet' type='text/css'>
     <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'>
+
     <style> 
 
 body{
@@ -26,22 +28,33 @@ body{
 
 				position:relative;
     }
-    #menu{
-      display: block;
-      height: 100%; 
-	  width: 100%;
-	  min-height:771px;
-      padding: 5% 3%;
-      text-align: center;
-      font-family: Arial, sans-serif;
-		background-image: url('img/border.png'), url('img/background.png'), url('img/artery.png');
-		background-size:cover,contain; 
-	}
 
+.main {
+	text-align: center;
+font-family: 'Share Tech Mono', sans-serif;
+     color: #FFFFFF;
+background-image: url('img/startscreen.png');
+background-size: contain;
+background-position: 50%;
+background-repeat: no-repeat;
+}
+
+    #menu{
+     display: block;
+height: 100%;
+width: 100%;
+min-height: 771px;
+padding: 5% 3%;
+	}
+	#menu ul{
+		margin-top: 5%;
+		margin-left: 10%;
+	}
     #menu li{
-      font-size: 5em;
-      line-height: 1.5em;
-      list-style: none;
+      margin-top: 15px;
+font-size: 6em;
+line-height: 1.5em;
+list-style: none;
     }
 
 	#gameholder{
@@ -59,8 +72,7 @@ body{
 	}
 	
 	#tryagain{
-		padding: 25px;
-		color: #0066AA;
+		padding-bottom: 15px;
 	}
 
 	.overlap{
@@ -68,19 +80,21 @@ body{
 		width: 100%;
 		max-width: 1024px;
 	}
-		
+		#gameover h2{
+				font-size: 2em;
+				margin-top: 15%;
+		}
     #game{
 		text-align: center;
 		display:none;    
     }
 
     #btnOpts{
-      font-size: 2em !important;
+      font-size: 3em !important;
     }
 
-    #title{
-     font-size: 5em;
-     margin-top: 2em;
+    .title{
+    	text-shadow: 2px 2px 4px rgb(228, 33, 16), -2px 2px 4px rgb(228, 33, 16);
     }
 
 	#collisioncanvas{
@@ -117,17 +131,19 @@ body{
 	}
 
 	#gameover{
-		display: none;
-		background: url('img/background.png');
-		width: 100%;
-		height: 100%;
-		background-size: cover; 
-		min-height: 900px;
+	background: url("img/endscreen.png");
+display: none;
+text-shadow: 2px 2px 4px rgb(228, 33, 16), -2px 2px 4px rgb(228, 33, 16);
+width: 100%;
+height: 100%;
+min-height: 900px;
 min-width: 1024px;
 text-align: center;
-font-family: helvetica;
 padding-top: 50px;
 font-size: 40px;
+background-size: contain;
+background-position: 50%;
+background-repeat: no-repeat;
 
 	}
 
@@ -152,6 +168,7 @@ font-size: 40px;
 	}
 
 #options h3{
+	margin-top: 0;
 		font-size: 4em;
 		text-align: center;
 }
@@ -162,13 +179,24 @@ margin: 0 auto;
 font-size: 2em;
 }
 #options input{
-	font-size: 20px;
 width: 50px;
+border: 1px solid #FF0000;
+background: rgba(0,0,0,0);
+color: #FFFFFF;
+text-align: right;
+text-shadow: 2px 2px 4px rgb(228, 33, 16), -2px 2px 4px rgb(228, 33, 16);
+font-size: 1em;
 }
 
 #options{
-	font-family: helvetica;
-	border: 1px solid #000;
+	display: none;
+	text-shadow: 2px 2px 4px rgb(228, 33, 16), -2px 2px 4px rgb(228, 33, 16);
+	font-family: 'Share Tech Mono', sans-serif;
+     color: #FFFFFF;
+	background: url('img/startscreen.png');
+	background-size: contain;
+background-position: 50%;
+background-repeat: no-repeat;
 	width: 1200px;
 	height: 900px;
 	margin: 0 auto;
@@ -177,10 +205,11 @@ width: 50px;
 #optStart{
 width: 200px;
 height: 50px;
-font-size: 2em;
+font-size: 5em;
 line-height: 45px;
 text-align: center;
-margin: 100px auto;
+margin-left: 600px;
+margin-top: 40px;
 }
 	#border{
 		background: url('img/border.png');
@@ -194,9 +223,9 @@ margin: 100px auto;
 	#stats{
 		width: 500px;
 		margin: 0 auto;
-		border: 2px solid #000000;
 		padding: 15px;
-		font-family: helvetica;
+		font-size: 0.6em;
+
 	}
 	@-webkit-keyframes pulse {
 	  0%   { -webkit-transform: scale(1); }
@@ -208,15 +237,15 @@ margin: 100px auto;
 
 <body>
 
-    <div id="menu" class="step slide">
-        <h1 id="title">BLOODTRUCKS</h1>
+    <div id="menu" class=" main step slide">
+  
         <ul>
-            <li id="btnPlay">Play</li>
-            <li id="btnOpts">Options</li>
+            <li id="btnPlay" class="title">press to start</li>
+            <li id="btnOpts" class="title">options</li>
         </ul>
     </div>
 
-    <div id="game" class="step" data-x="0" data-y="0" data-scale="4">
+    <div id="game" class="main step" data-x="0" data-y="0" data-scale="4">
 		<div id="gameholder">
 			<div id="background" class="overlap"  width="1200" height="900"></div>
 			<div id="artery" class="overlap"  width="1200" height="900"></div>
@@ -236,7 +265,7 @@ margin: 100px auto;
 			<div>Health Grade: <span id="grade">A</span></div>     
 		</div>
     </div>
-    <div id="options">
+    <div id="options" class-="main">
     	<h3>Options</h3>
     	<table>
     		<tr><td>Starting Cells</td><td><input value="10" id="numCell" type="text"></input></td></tr>
@@ -248,14 +277,13 @@ margin: 100px auto;
     	</table>
     	<div id="optStart" onclick="setVars();"> Start </div>
     </div>
-    <div id="gameover">
+    <div id="gameover" class="main">
     	<h2>You lost!</h2>
     	<div id="tryagain" onclick="tryAgain();">Try Again?</div>
     </div>  
 
 	<div id="imghold" style="display:none">
 	</div>
-
 	<script src="js/jquery.js"></script>
 	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
 	<script src="js/jquery.zoomooz.min.js"></script>
@@ -394,10 +422,63 @@ margin: 100px auto;
 		
 	}
 
-function getFrame(){
-	var retX = 0,
-			retY = 0;
+function AudioManager() {
+  // map for loaded sounds
+  this.sounds = {};
 
+  // create our permanent nodes
+  this.nodes = {
+    destination: this.audioContext.destination,
+    masterGain: this.audioContext.createGainNode(),
+
+    backgroundMusicGain: this.audioContext.createGainNode(),
+
+    coreEffectsGain: this.audioContext.createGainNode(),
+    effectsGain: this.audioContext.createGainNode(),
+    pausedEffectsGain: this.audioContext.createGainNode()
+  };
+
+  // and setup the graph
+  this.nodes.masterGain.connect( this.nodes.destination );
+
+  this.nodes.backgroundMusicGain.connect( this.nodes.masterGain );
+
+  this.nodes.coreEffectsGain.connect( this.nodes.masterGain );
+  this.nodes.effectsGain.connect( this.nodes.coreEffectsGain );
+  this.nodes.pausedEffectsGain.connect( this.nodes.coreEffectsGain );
+}
+
+AudioManager.prototype.pauseEffects = function() {
+  this.nodes.effectsGain.disconnect();
+
+  var now = Date.now();
+  for ( var name in this.sounds ) {
+    var sound = this.sounds[ name ];
+
+    if ( !sound.ignorePause && ( now - sound.source.noteOnAt < sound.buffer.duration * 1000 ) ) {
+      sound.pausedAt = now - sound.source.noteOnAt;
+      sound.source.noteOff();
+    }
+  }
+}
+
+AudioManager.prototype.resumeEffects = function() {
+  this.nodes.effectsGain.connect( this.nodes.coreEffectsGain );
+
+  var now = Date.now();
+  for ( var name in this.sounds ) {
+    if ( sound.pausedAt ) {
+      this.play( sound.name );
+      delete sound.pausedAt;
+    }
+  }
+};
+
+AudioManager.prototype.resumeEffects = function() {
+  this.nodes.effectsGain.connect( this.nodes.coreEffectsGain );
+}
+AudioManager.prototype.pauseEffects = function() {
+  this.nodes.effectsGain.disconnect();
 }
 
 function animategrade(a){  
@@ -438,6 +519,14 @@ function animategrade(a){
 
 			$('#maxlive').text(maxcells + a);
 }
+
+var bSound = new Audio("s/bounce.ogg");
+
+function boundSound(){
+
+}
+
+
 function gameover(){
 	$('#game').hide();
 	$("#gameover").append($("#stats").clone().show());
