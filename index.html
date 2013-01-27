@@ -143,13 +143,16 @@
     	<h2>YOU DIED</h2>
     	<h4>You carried ## Oxygen</h4>
     	<button>Try Again</button>
-    </div>
+    </div>  
+
+	<div id="imghold">
+	</div>
 
 	<script src="js/jquery.js"></script>
 	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
 	<script src="js/jquery.zoomooz.min.js"></script> 
-	<script> 
-	
+	<script>  
+			loadImages();
 	// $('#centerzoom').on('click', function(e){
 	// 	$(this).zoomTo({targetsize:0.4, duration:600});
 	// 	e.stopPropagation();
@@ -228,14 +231,21 @@
 	}
 
 	function loadImages(){
-		$.each(assets, function(name, url){
-			images[name] = new Image();
-			images[name].src = url;
+		$('<img>').attr('src', 'img/cell2animationexport.png').on('load', function(){
+			var canvas = $('<canvas>').attr('id', 'cells').attr({
+				height: this.height,
+				width: this.width
+			})[0];
+			
+			canvas.getContext('2d').drawImage(this, 0, 0);
+			
+			$(canvas).appendTo('#imghold');
 		});
+		
+		
 	}
 
 	function init() {
-		loadImages();
 	   var   b2Vec2 = Box2D.Common.Math.b2Vec2
 	      ,  b2AABB = Box2D.Collision.b2AABB
 	   	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
@@ -643,8 +653,9 @@
           
 		  gamestep();
 	      world.Step(1 / 60, 10, 10);
-	      world.DrawLiveData();
-	      world.ClearForces();  
+	      world.DrawDebugData();
+		  world.DrawLiveData();
+	      //world.ClearForces();  
 
 		  currenthbtime += 1;
 			$('#heart').css({
