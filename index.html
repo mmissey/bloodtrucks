@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=1024" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>Blood Trucks</title>
 
     <link rel="shortcut icon" href="favicon.png" />
@@ -41,15 +42,14 @@
 	#gameholder{
 		position: relative;
 		display: inline-block;
-		border:1px solid red; 
-		width:100%; 
-		box-sizing:border-box;
+		border: 1px solid red;
+		width: 100%;
+		box-sizing: border-box;
 		text-align: left;
-		margin-bottom:600px;
-		max-width:1024px;
-		margin: 0 auto 600px auto;
-		-webkit-transform-origin: 50% 50%; 
-		overflow:hidden;
+		max-width: 1024px;
+		margin: 0 auto;
+		-webkit-transform-origin: 50% 50%;
+		overflow: hidden;
 	}
 	
 	.overlap{
@@ -182,7 +182,11 @@
 	<script src="js/jquery.js"></script>
 	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
 	<script src="js/jquery.zoomooz.min.js"></script> 
-	<script>  
+	<script> 
+	document.ontouchmove = function(event){
+	    event.preventDefault();
+	}
+	 
 	loadImages('img/cell2animationexport.png', 'cell', true);
 	loadImages('img/hemo.png', 'hemo', true);
 	loadImages('img/hemoeyes.png', 'hemoeyes', false);
@@ -553,7 +557,12 @@ function getFrame(){
 	   //mouse
 	   var mousePVec, isMouseDown, selectedBody;
 	   mousecollision = new b2BodyDef;
-	   document.addEventListener("mousedown, touchstart", function(e) {
+	   $(document.body).on("mousedown touchstart", function(e) {  
+		
+			if(e.type === 'touchstart'){
+				e = e.touches[0];
+			}
+		
 	      isMouseDown = true; 
 			canvasratio = $('#collisioncanvas').attr('width') / $('#collisioncanvas').width(); 
 	
@@ -567,12 +576,16 @@ function getFrame(){
 			}
 	
 	      handleMouseMove(e); 
-	      document.addEventListener("mousemove, touchmove", handleMouseMove, true); 
+	      $(document.body).on("mousemove touchmove", handleMouseMove); 
 
-	   }, true);
+	   });
 
-	   document.addEventListener("mouseup, touchend", function() {
-			document.removeEventListener("mousemove", handleMouseMove, true);
+	   $(document.body).on("mouseup touchend", function(e) {  
+			if(e.type === 'touchend'){
+				e = e.touches[0];
+			}
+		
+			$(document.body).off("mousemove touchmove", handleMouseMove);
 			var rb =  world.pathlist[0];
 			if(rb === undefined) return;
 			rb.utype = 'rbmoving';
@@ -589,9 +602,13 @@ function getFrame(){
 			isMouseDown = false;
 			mouseX = undefined;
 			mouseY = undefined;  
-	   }, true);
+	   });
 
 	   function handleMouseMove(e) { 
+		
+			if(e.type === 'touchmove'){
+				e = e.touches[0];
+			}
 		
 	      mouseX = ((e.pageX - $('#gameholder').position().left) / 45) * canvasratio;
 	      mouseY = ((e.pageY - $('#gameholder').position().top) / 45) * canvasratio;   
