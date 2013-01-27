@@ -68,7 +68,7 @@ body{
 		display:none;    
     }
 
-    #btnHelp{
+    #btnOpts{
       font-size: 2em !important;
     }
 
@@ -265,10 +265,10 @@ margin: 100px auto;
 	function setVars(){
 		cellmovement = parseInt($('#cellMovement').val());
 		cellstart = parseInt($('#numCell').val());
-		rbmovement = parseInt($('#cellMovement').val());
+		rbmovement = parseInt($('#rbMovement').val());
 		redcellstart = parseInt($('#numRB').val());
 		newcellbeat = parseInt($('#newCellBeat').val());
-		lifeminus = parseInt($('#lifeMinus').val());
+		lifeminus = $('#lifeMinus').val();
 		init();
 		$('#options').hide();
 		$('#game').show();
