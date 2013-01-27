@@ -117,6 +117,9 @@
 
 
 <body>
+	
+	<!-- <canvas id="try" height="800" width="800" style="border: 1px solid green;"></canvas> 
+    <div type="button" onclick="essay()">Try</div>  -->
 
     <div id="menu" class="step slide">
         <h1 id="title">BLOODTRUCKS</h1>
@@ -145,14 +148,14 @@
     	<button>Try Again</button>
     </div>  
 
-	<div id="imghold">
+	<div id="imghold" style="display:none">
 	</div>
 
 	<script src="js/jquery.js"></script>
 	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
 	<script src="js/jquery.zoomooz.min.js"></script> 
 	<script>  
-			loadImages('img/cell2animationexport.png', 'cell');
+	loadImages('img/cell2animationexport.png', 'cell');
 	// $('#centerzoom').on('click', function(e){
 	// 	$(this).zoomTo({targetsize:0.4, duration:600});
 	// 	e.stopPropagation();
@@ -161,8 +164,15 @@
 	// }).on('zoomout', function(){
 	// 	$('#centerzoom').zoomTarget();
 	// 	
-	// });    
+	// });  
 	
+	// function essay(){
+	// 	var ctx = document.getElementById('try').getContext('2d');
+	// 	ctx.drawImage(document.getElementById('grcell'), 0, 0, 800, 800, 0, 0, 400, 400); 
+	// 	ctx.globalAlpha = 0.5;
+	// 	ctx.drawImage(document.getElementById('cell'), 0, 0, 800, 800, 0, 0, 400, 400); 
+	// 	ctx.globalAlpha = 1;
+	// };    
 
 	var hbtime = 100, 
 	currenthbtime = 0,
@@ -674,9 +684,9 @@
           
 		  gamestep();
 	      world.Step(1 / 60, 10, 10);
-	      world.DrawDebugData();
-		  world.DrawLiveData();
-	      //world.ClearForces();  
+		  world.DrawLiveData(); 
+		  world.DrawDebugData();
+	      world.ClearForces();  
 
 		  currenthbtime += 1;
 			$('#heart').css({
@@ -691,8 +701,7 @@
 	   };
 
 	};
-	</script>
-	<script type="text/javascript">
+
 
 	        $("#btnPlay").on("click", function(){
 	            init();
@@ -701,6 +710,6 @@
 				$('#game').show();
 	        });
 
-	    </script>
+			</script>
 </body>
 </html>
