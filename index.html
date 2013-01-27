@@ -299,11 +299,7 @@ margin: 100px auto;
 	}
 
 	function tryAgain(){
-		$("#gameover").hide();
-		$("#game").show();
-		$('#cellsdied').text('0');
-		$("#maxlive").text('0');
-		init();
+		location.reload();
 	}
 
 	document.ontouchmove = function(event){
@@ -423,6 +419,9 @@ function animategrade(a){
 
 					if(grade < 50){
 						failed = true;
+						setTimeout(function(){
+							gameover();
+						},2000);
 					}
 				}
 			}, 1000);   
