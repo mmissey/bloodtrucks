@@ -175,8 +175,10 @@
 	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
 	<script src="js/jquery.zoomooz.min.js"></script> 
 	<script>  
-	loadImages('img/cell2animationexport.png', 'cell');
-	loadImages('img/hemo.png', 'hemo');
+	loadImages('img/cell2animationexport.png', 'cell', true);
+	loadImages('img/hemo.png', 'hemo', true);
+	loadImages('img/hemoeyes.png', 'hemoeyes', false);
+	loadImages('img/celleyes.png', 'celleyes', false);
 
 	// $('#centerzoom').on('click', function(e){
 	// 	$(this).zoomTo({targetsize:0.4, duration:600});
@@ -245,7 +247,7 @@
 	    return str;
 	}
 
-	function loadImages(src, id){ 
+	function loadImages(src, id, grey){ 
 		
 		$('<img>').attr('src', src).on('load', function(){
 			var canvas = $('<canvas>').attr('id', id).attr({
@@ -255,27 +257,28 @@
 			
 			canvas.getContext('2d').drawImage(this, 0, 0);
 			$(canvas).appendTo('#imghold');  
-			
-			var graycanvas = $('<canvas>').attr('id', 'gr'+id).attr({
-					height: this.height,
-					width: this.width
-				})[0];				
-			
-			ctx = graycanvas.getContext('2d');
-			ctx.drawImage(this, 0, 0); 
-			var pixels = ctx.getImageData(0,0,graycanvas.width, graycanvas.height); 
-			
-			var d = pixels.data;
-			for (var i=0; i	<  d.length; i	+=	4) {
-			    var r = d[i];
-			    var g = d[i+1];
-			    var b = d[i+2];
-			    var v = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-			    d[i] = d[i+1] = d[i+2] = v; 
-					  	}        
+			if(grey !== false){
+				var graycanvas = $('<canvas>').attr('id', 'gr'+id).attr({
+						height: this.height,
+						width: this.width
+					})[0];				
+				
+				ctx = graycanvas.getContext('2d');
+				ctx.drawImage(this, 0, 0); 
+				var pixels = ctx.getImageData(0,0,graycanvas.width, graycanvas.height); 
+				
+				var d = pixels.data;
+				for (var i=0; i	<  d.length; i	+=	4) {
+				    var r = d[i];
+				    var g = d[i+1];
+				    var b = d[i+2];
+				    var v = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+				    d[i] = d[i+1] = d[i+2] = v; 
+						  	}        
 
-			ctx.putImageData(pixels, 0, 0);
-			$(graycanvas).appendTo('#imghold');   
+				ctx.putImageData(pixels, 0, 0);
+				$(graycanvas).appendTo('#imghold');  
+			}
 		});
 		
 		
@@ -414,6 +417,17 @@ function getFrame(){
 			'current': 0,
 			'direction': 1
 		}
+
+	newthing.eye_data = {
+      'height': 512,
+      'width': 512,
+			'frames': 10,
+			'currentFrame': 0,
+			'framerate': 20,
+			'current': 0,
+			'direction': 1
+		}
+
 		objectid ++;
 		newthing.obj_actions = {
 			celldeath: function(){
