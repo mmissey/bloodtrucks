@@ -1,1 +1,1065 @@
-My GitHub Page
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1024" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Hemoglobbin'</title>
+
+    <link rel="shortcut icon" href="favicon.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link href='http://fonts.googleapis.com/css?family=Original+Surfer' rel='stylesheet' type='text/css'>
+    <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'>
+
+    <style> 
+
+body{
+	-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+}
+
+    #game{
+
+				position:relative;
+    }
+
+.main {
+	text-align: center;
+font-family: 'Share Tech Mono', sans-serif;
+     color: #FFFFFF;
+background-image: url('img/startscreen.png');
+background-size: contain;
+background-position: 50%;
+background-repeat: no-repeat;
+}
+
+    #menu{
+     display: block;
+height: 100%;
+width: 100%;
+min-height: 771px;
+padding: 5% 3%;
+	}
+	#menu ul{
+		margin-top: 5%;
+		margin-left: 10%;
+	}
+    #menu li{
+      margin-top: 15px;
+font-size: 6em;
+line-height: 1.5em;
+list-style: none;
+    }
+
+	#gameholder{
+		position: relative;
+		display: inline-block;
+		border: 1px solid red;
+		width: 100%;
+		box-sizing: border-box;
+		text-align: left;
+		max-width: 1024px;
+		margin: 0 auto;
+		-webkit-transform-origin: 50% 50%;
+		overflow: hidden;
+
+	}
+	
+	#tryagain{
+		padding-bottom: 15px;
+	}
+
+	.overlap{
+		position:absolute;
+		width: 100%;
+		max-width: 1024px;
+	}
+		#gameover h2{
+				font-size: 2em;
+				margin-top: 15%;
+		}
+    #game{
+		text-align: center;
+		display:none;    
+    }
+
+    #btnOpts{
+      font-size: 3em !important;
+    }
+
+    .title{
+    	text-shadow: 2px 2px 4px rgb(228, 33, 16), -2px 2px 4px rgb(228, 33, 16);
+    }
+
+	#collisioncanvas{
+		width:100%; 
+	}
+
+	#heartholder{
+		height: 60px;
+		width: 60px;
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		text-align:right;
+		display:none;
+	}
+
+	#heart{
+		height:100%;
+		width:100%; 
+		min-width:50%;
+		min-height:50%;
+		background: rgba(255,0,0,0.5);  
+		border-radius:100%; 
+		position:relative;
+		display:inline-block;
+	}
+	
+	#centerzoom{
+		width: 15%;
+		height: 116px;
+		position: relative;
+		margin: 32% auto;
+		left: 3%;
+	}
+
+	#gameover{
+	background: url("img/endscreen.png");
+display: none;
+text-shadow: 2px 2px 4px rgb(228, 33, 16), -2px 2px 4px rgb(228, 33, 16);
+width: 100%;
+height: 100%;
+min-height: 900px;
+min-width: 1024px;
+text-align: center;
+padding-top: 50px;
+font-size: 40px;
+background-size: contain;
+background-position: 50%;
+background-repeat: no-repeat;
+
+	}
+
+	#background{
+		background: url('img/background.png');
+		width: 100%;
+		height: 100%;
+		background-size: cover; 
+		-webkit-transform-origin: 50% 50%; 
+		-webkit-transition: all 1s ease; 
+		-webkit-filter: contrast(100%); 
+	}
+
+	#artery{
+		background: url('img/artery.png');
+		width: 100%;
+		height: 100%;
+		background-size: 24%;
+		background-repeat: no-repeat;
+		background-position: 54% 51%; 
+		-webkit-transform-origin: 50% 50%; 
+	}
+
+#options h3{
+	margin-top: 0;
+		font-size: 4em;
+		text-align: center;
+}
+#options table{
+	width: 500px;
+height: 300px;
+margin: 0 auto;
+font-size: 2em;
+}
+#options input{
+width: 50px;
+border: 1px solid #FF0000;
+background: rgba(0,0,0,0);
+color: #FFFFFF;
+text-align: right;
+text-shadow: 2px 2px 4px rgb(228, 33, 16), -2px 2px 4px rgb(228, 33, 16);
+font-size: 1em;
+}
+
+#options{
+	display: none;
+	text-shadow: 2px 2px 4px rgb(228, 33, 16), -2px 2px 4px rgb(228, 33, 16);
+	font-family: 'Share Tech Mono', sans-serif;
+     color: #FFFFFF;
+	background: url('img/startscreen.png');
+	background-size: contain;
+background-position: 50%;
+background-repeat: no-repeat;
+	width: 1200px;
+	height: 900px;
+	margin: 0 auto;
+	padding: 0;
+}
+#optStart{
+width: 200px;
+height: 50px;
+font-size: 5em;
+line-height: 45px;
+text-align: center;
+margin-left: 600px;
+margin-top: 40px;
+}
+	#border{
+		background: url('img/border.png');
+		width: 100%;
+		height: 100%;
+		background-size: cover;
+		-webkit-transform-origin: 50% 50%;  
+		-webkit-animation: pulse alternate 1s infinite ease-out;   
+		-webkit-transition: 0.5s ease all;
+	} 
+	#stats{
+		width: 500px;
+		margin: 0 auto;
+		padding: 15px;
+		font-size: 0.6em;
+
+	}
+	@-webkit-keyframes pulse {
+	  0%   { -webkit-transform: scale(1); }
+	  100% { -webkit-transform: scale(1.05); }
+	}
+    </style>
+
+</head>
+
+<body>
+
+    <div id="menu" class=" main step slide">
+  
+        <ul>
+            <li id="btnPlay" class="title">press to start</li>
+            <li id="btnOpts" class="title">options</li>
+        </ul>
+    </div>
+
+    <div id="game" class="main step" data-x="0" data-y="0" data-scale="4">
+		<div id="gameholder">
+			<div id="background" class="overlap"  width="1200" height="900"></div>
+			<div id="artery" class="overlap"  width="1200" height="900"></div>
+			<div id="border" class="overlap"  width="1200" height="900"></div>
+			<canvas id="collisioncanvas" class="overlap"  width="1200" height="900"></canvas>
+			<canvas id="imgCanvas" class="overlap" width="1200" height="900"></canvas>
+			<canvas id="pathcanvas" class="overlap" width="1200" height="900"></canvas>
+			<div id="centerzoom"></div> 
+			<div id="heartholder">
+				<div id="heart"></div>
+			</div>
+		</div>
+		<div id="stats" style="display:none">
+			<div>Currently Alive: <span id="currentalive">0</span></div>
+			<div>Total Died: <span id="cellsdied">0</span></div> 
+			<div>Total Cells: <span id="maxlive">0</span></div>
+			<div>Health Grade: <span id="grade">A</span></div>     
+		</div>
+    </div>
+    <div id="options" class-="main">
+    	<h3>Options</h3>
+    	<table>
+    		<tr><td>Starting Cells</td><td><input value="10" id="numCell" type="text"></input></td></tr>
+    		<tr><td>Cell Movement</td><td><input value="10" id="cellMovement" type="text"></input></td></tr>
+ 				<tr><td>Starting Red Blood Cells</td><td><input value="8" id="numRB" type="text"></input></td></tr>
+    		<tr><td>Red Blood Cell Movement</td><td><input value="6" id="rbMovement" type="text"></input></td></tr>
+    		<tr><td>New Cell # Beats</td><td><input value="20" id="newCellBeat" type="text"></input></td></tr>
+    		<tr><td>Life Minus per tick</td><td><input value="0.5" id="lifeMinus" type="text"></input></td></tr>
+    	</table>
+    	<div id="optStart" onclick="setVars();"> Start </div>
+    </div>
+    <div id="gameover" class="main">
+    	<h2>You lost!</h2>
+    	<div id="tryagain" onclick="tryAgain();">Try Again?</div>
+    </div>  
+
+	<div id="imghold" style="display:none">
+	</div>
+	<script src="js/jquery.js"></script>
+	<script src="js/Box2dWeb-2.1.a.3.min.js"></script>
+	<script src="js/jquery.zoomooz.min.js"></script>
+	<script> 
+
+	var hbtime = 100, 
+	currenthbtime = 0,
+	currentbeat = 0,
+	newcellbeat = 5,
+	cellmovement = 2,
+	celllife = 1000,
+	lifeminus = 0.5,
+	exfoliate = 0.999,
+	celllifevar = 500,
+	vein = {
+		xmin: 12.1,
+		xmax: 16.1,
+		ymin: 8.5,
+		ymax: 11.5,
+		xcenter: 14.1,
+		ycenter: 10
+	},
+	rblife = 1000,
+	cellsize = 1,
+	rbmovement = 6,
+	objectid = 0,
+	redcellstart = 4,
+	cellstart = 4,
+	warningflash = 0.25,
+	cellrepulse = 1.7,
+	grade = 100,
+	failed = false; 
+
+	function setVars(){
+		cellmovement = parseInt($('#cellMovement').val());
+		cellstart = parseInt($('#numCell').val());
+		rbmovement = parseInt($('#rbMovement').val());
+		redcellstart = parseInt($('#numRB').val());
+		newcellbeat = parseInt($('#newCellBeat').val());
+		lifeminus = $('#lifeMinus').val();
+		init();
+		$('#options').hide();
+		$('#game').show();
+	}
+
+	function tryAgain(){
+		location.reload();
+	}
+
+	document.ontouchmove = function(event){
+	    event.preventDefault();
+	}
+	 
+	loadImages('img/cell2animationexport.png', 'cell', true);
+	loadImages('img/hemo.png', 'hemo', true);
+	loadImages('img/hemoeyes.png', 'hemoeyes', false);
+	loadImages('img/celleyes.png', 'celleyes', false);
+
+	// $('#centerzoom').on('click', function(e){
+	// 	$(this).zoomTo({targetsize:0.4, duration:600});
+	// 	e.stopPropagation();
+	// 	e.preventDefault();
+	// 	return false;
+	// }).on('zoomout', function(){
+	// 	$('#centerzoom').zoomTarget();
+	// 	
+	// });    
+
+	
+	var cats = {
+		walls: 0x0001,
+		veins: 0x0002,
+		cells: 0x0004,
+		rbs: 0x0008,
+		arbs: 0x0010,
+		dest: 0x0020,
+		outcell: 0x0040
+	};
+	
+	var mouseX, mouseY, destination;
+	var canvasratio = $('#collisioncanvas').attr('width') / $('#collisioncanvas').width();  
+	
+	function randrange (min, max) {
+	    return Math.random() * (max - min) + min;
+	} 
+	
+	function randomString(length) {
+	    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+
+	    if (! length) {
+	        length = Math.floor(Math.random() * chars.length);
+	    }
+
+	    var str = '';
+	    for (var i = 0; i < length; i++) {
+	        str += chars[Math.floor(Math.random() * chars.length)];
+	    }
+	    return str;
+	}
+
+	function loadImages(src, id, grey){ 
+		
+		$('<img>').attr('src', src).on('load', function(){
+			var canvas = $('<canvas>').attr('id', id).attr({
+				height: this.height,
+				width: this.width
+			})[0];
+			
+			canvas.getContext('2d').drawImage(this, 0, 0);
+			$(canvas).appendTo('#imghold');  
+
+			if(grey !== false){
+				var graycanvas = $('<canvas>').attr('id', 'gr'+id).attr({
+						height: this.height,
+						width: this.width
+					})[0];				
+				
+				ctx = graycanvas.getContext('2d');
+				ctx.drawImage(this, 0, 0); 
+				var pixels = ctx.getImageData(0,0,graycanvas.width, graycanvas.height); 
+				
+				var d = pixels.data;
+				for (var i=0; i	<  d.length; i	+=	4) {
+				    var r = d[i];
+				    var g = d[i+1];
+				    var b = d[i+2];
+				    var v = 0.1126 * r + 0.6152 * g + 0.0622 * b;
+				    d[i] = d[i+1] = d[i+2] = v; 
+						  	}    
+
+				ctx.putImageData(pixels, 0, 0);
+				$(graycanvas).appendTo('#imghold');  
+			}
+		});
+		
+		
+	}
+
+function AudioManager() {
+  // map for loaded sounds
+  this.sounds = {};
+
+  // create our permanent nodes
+  this.nodes = {
+    destination: this.audioContext.destination,
+    masterGain: this.audioContext.createGainNode(),
+
+    backgroundMusicGain: this.audioContext.createGainNode(),
+
+    coreEffectsGain: this.audioContext.createGainNode(),
+    effectsGain: this.audioContext.createGainNode(),
+    pausedEffectsGain: this.audioContext.createGainNode()
+  };
+
+  // and setup the graph
+  this.nodes.masterGain.connect( this.nodes.destination );
+
+  this.nodes.backgroundMusicGain.connect( this.nodes.masterGain );
+
+  this.nodes.coreEffectsGain.connect( this.nodes.masterGain );
+  this.nodes.effectsGain.connect( this.nodes.coreEffectsGain );
+  this.nodes.pausedEffectsGain.connect( this.nodes.coreEffectsGain );
+}
+
+AudioManager.prototype.pauseEffects = function() {
+  this.nodes.effectsGain.disconnect();
+
+  var now = Date.now();
+  for ( var name in this.sounds ) {
+    var sound = this.sounds[ name ];
+
+    if ( !sound.ignorePause && ( now - sound.source.noteOnAt < sound.buffer.duration * 1000 ) ) {
+      sound.pausedAt = now - sound.source.noteOnAt;
+      sound.source.noteOff();
+    }
+  }
+}
+
+AudioManager.prototype.resumeEffects = function() {
+  this.nodes.effectsGain.connect( this.nodes.coreEffectsGain );
+
+  var now = Date.now();
+  for ( var name in this.sounds ) {
+    if ( sound.pausedAt ) {
+      this.play( sound.name );
+      delete sound.pausedAt;
+    }
+  }
+};
+
+AudioManager.prototype.resumeEffects = function() {
+  this.nodes.effectsGain.connect( this.nodes.coreEffectsGain );
+}
+AudioManager.prototype.pauseEffects = function() {
+  this.nodes.effectsGain.disconnect();
+}
+
+function animategrade(a){  
+	
+	if(failed) return;
+	    if(a === undefined){
+		a = 0;
+	}
+		
+		var cells = parseInt($('#currentalive').text()); 
+		var maxcells = cells + parseInt($('#cellsdied').text());
+
+		if( (cells / maxcells).toFixed(2) * 100 !== parseInt($('#grade').text())){
+			$({'grade': parseInt($('#grade').text())}).animate({
+				'grade': (cells / maxcells).toFixed(2) * 100
+			}, {
+				step: function(){
+					$('#grade').text(Math.round(this.grade) + '%'); 
+				},
+				complete: function(){  
+					grade = Math.round(this.grade);
+					$('#grade').text(Math.round(this.grade) + '%'); 
+					
+					if( !isNaN(this.grade) )
+					$('#background').css({
+						'-webkit-filter': ['contrast(',(100 + ((10 - (this.grade/10))*3.4)),'%)'].join('')
+					});
+
+					if(grade < 50){
+						failed = true;
+						setTimeout(function(){
+							gameover();
+						},2000);
+					}
+				}
+			}, 1000);   
+		}
+
+			$('#maxlive').text(maxcells + a);
+}
+
+var bSound = new Audio("s/bounce.ogg");
+
+function boundSound(){
+
+}
+
+
+function gameover(){
+	$('#game').hide();
+	$("#gameover").append($("#stats").clone().show());
+	$('#gameover').show();
+}
+	function init() {
+		$('#options').hide();
+	   var   b2Vec2 = Box2D.Common.Math.b2Vec2
+	      ,  b2AABB = Box2D.Collision.b2AABB
+	   	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
+	   	,	b2Body = Box2D.Dynamics.b2Body
+	   	,	b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+	   	,	b2Fixture = Box2D.Dynamics.b2Fixture
+	   	,	b2World = Box2D.Dynamics.b2World
+	   	,	b2MassData = Box2D.Collision.Shapes.b2MassData
+	   	,	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+	   	,	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
+	   	,	b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+	      ,  b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef
+	, newthing
+	      ;
+
+	   var world = new b2World(
+	         new b2Vec2(0, 0)    //gravity
+	      ,  true                 //allow sleep
+	   ); 
+	
+		world.pathlist = []; 
+		
+		var listener = new Box2D.Dynamics.b2ContactListener;
+		listener.BeginContact = function(contact) {
+
+			function whois(type, a, b) {
+				if (a.utype == type) return a;
+				if (b.utype == type) return b;
+				return -1;
+			}
+
+			var a = contact.GetFixtureA();
+			var b = contact.GetFixtureB(); 
+			
+			if((a.utype === undefined || b.utype === undefined) || (a.utype === 'vein' || b.utype === 'vein') || (a.utype === 'wall' || b.utype === 'wall') || (a.utype === b.utype)) return; 
+			
+			var rb = whois('rbmoving', a, b);
+			var cell = whois('cell', a, b); 
+			var dest = whois('destination', a, b);
+			var dead = whois('deadcell', a, b);
+			
+			//If an rb is hitting the destination
+			if(dest !== -1 && rb !== -1){
+				if(rb.path.length > 1) return;
+				rb.utype = 'rbcharging';
+				rb.m_filter.categoryBits = cats.rbs;
+				rb.m_filter.maskBits = cats.veins | cats.rbs;
+				rb.path = []; 
+				rb.obj_data.bubbles = 4;  			
+			}
+			
+			if(rb === -1) return; 
+			
+			if(rb.obj_data.bubbles > 0){ 
+				
+				if(cell !== -1){
+					cell.obj_data.o2 = Math.min( cell.obj_data.o2 + 1000, cell.obj_data.o2max);
+					rb.obj_data.bubbles -=1;  
+				}
+			}  
+			
+			rb.path.shift();
+  
+			
+		}
+		world.SetContactListener(listener); 
+		
+	   var fixDef = new b2FixtureDef;
+	   fixDef.density = 1.0;
+	   fixDef.friction = 0.5;
+	   fixDef.restitution = 0.2; 
+	
+	   var fixDef2 = new b2FixtureDef;
+	   fixDef2.density = 1.0;
+	   fixDef2.friction = 0.5;
+	   fixDef2.restitution = 0.2;
+
+	   var bodyDef = new b2BodyDef;  
+	   bodyDef.linearDamping = 1;
+	
+	function randcell(){
+		bodyDef.type = b2Body.b2_dynamicBody;
+		fixDef.shape = new b2CircleShape(
+		  0.01 //radius
+		); 
+		fixDef.filter.categoryBits = cats.cells;
+		fixDef.filter.maskBits = cats.walls | cats.veins | cats.arbs | cats.cells;
+		
+		bodyDef.position.x = Math.random() * 20;
+		bodyDef.position.y = Math.random() * 20;
+		while(bodyDef.position.x > vein.xmin && bodyDef.position.x < vein.xmax && bodyDef.position.y > vein.ymin && bodyDef.position.y < vein.ymax){
+			bodyDef.position.x = Math.random() * 20;
+			bodyDef.position.y = Math.random() * 20;
+		} 
+		
+		fixDef2.shape = new b2CircleShape(
+		  cellrepulse //radius
+		);
+		fixDef2.isSensor = false;
+		fixDef2.filter.categoryBits = cats.outcell;
+		fixDef2.filter.maskBits = cats.rbs | cats.outcell;
+        
+		var body = world.CreateBody(bodyDef);
+		var outter = body.CreateFixture(fixDef2); 
+		outter.utype = 'outcell';
+		
+		newthing = body.CreateFixture(fixDef);
+		body.CreateFixture(fixDef2);
+		 
+		newthing.utype = 'cell';
+		newthing.m_body.canselect = true; 
+		var thisCellsLife = celllife + (Math.random() * celllifevar);
+		newthing.obj_data = {
+			o2: thisCellsLife,
+			o2max: thisCellsLife,
+			id: objectid
+		};
+		newthing.anim_data = {
+            'height': 512,
+            'width': 512,
+			'frames': 6,
+			'currentFrame': 0,
+			'framerate': 20,
+			'current': 0,
+			'direction': 1
+		}
+
+	newthing.eye_data = {
+      'height': 512,
+      'width': 512,
+			'frames': 10,
+			'currentFrame': 0,
+			'framerate': 20,
+			'current': 0,
+			'direction': 1
+		}
+
+		objectid ++;
+		newthing.obj_actions = {
+			celldeath: function(){
+				$('#cellsdied').text(parseInt($('#cellsdied').text()) + 1);  
+				
+				animategrade(0);
+			}
+		};
+		
+		animategrade(1);
+	}
+	
+	function newrb(){
+		bodyDef.type = b2Body.b2_dynamicBody;
+		fixDef.shape = new b2CircleShape(
+		  0.4 //radius
+		);
+		fixDef.isSensor = false;  
+		fixDef.density = 5;
+		fixDef.filter.categoryBits = cats.rbs;
+		fixDef.filter.maskBits = cats.rbs | cats.veins;
+		bodyDef.position.x = randrange(vein.xmin, vein.xmax);
+		bodyDef.position.y = randrange(vein.ymin, vein.ymax); 
+
+		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
+		newthing.utype = 'rbcharging';
+		newthing.obj_data = {
+			o2: rblife,
+			o2max: rblife,
+			bubbles: 4
+		}
+			newthing.eye_data = {
+      'height': 256,
+      'width': 256,
+			'frames': 12,
+			'currentFrame': ~~(Math.random() * 12),
+			'framerate': 20,
+			'current': 0,
+			'direction': 1
+		}
+		newthing.obj_actions = {
+			celldeath: function(){
+				console.log('rbdeath');
+			}
+		}
+		fixDef.density = 1;
+	}
+
+	   //create borders
+	   bodyDef.type = b2Body.b2_staticBody;
+	   fixDef.shape = new b2PolygonShape;
+	   fixDef.shape.SetAsBox(20, 2);
+	   bodyDef.position.Set(10, -1.5);
+	   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'wall';
+	   bodyDef.position.Set(10, 21.5);
+	   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'wall';  
+	   fixDef.shape.SetAsBox(2, 14);
+	   bodyDef.position.Set(-1.5, 13);
+	   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'wall';  
+	   bodyDef.position.Set(28.2, 13);
+	   newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'wall';   
+
+		
+		//create vein
+		bodyDef.type = b2Body.b2_staticBody;
+		fixDef.shape = new b2PolygonShape;
+		//top bottom walls    
+		fixDef.shape.SetAsBox(2, 0.1);  
+		fixDef.filter.categoryBits = cats.veins;
+		fixDef.filter.maskBits = cats.rbs | cats.cells;
+		bodyDef.position.Set(vein.xcenter, vein.ymin);
+		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'vein';
+		bodyDef.position.Set(vein.xcenter, vein.ymax);
+		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'vein';    
+		//left right walls
+		fixDef.shape.SetAsBox(0.1, 1.6);
+		fixDef.filter.categoryBits = cats.veins;
+		fixDef.filter.maskBits = cats.rbs | cats.cells;
+		bodyDef.position.Set(vein.xmin, vein.ycenter); 
+		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'vein';   
+		bodyDef.position.Set(vein.xmax, vein.ycenter);
+		newthing = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		newthing.utype = 'vein';   
+		
+		//Temporary purple start point
+		bodyDef.type = b2Body.b2_kinematicBody; 
+		fixDef.shape = new b2PolygonShape;
+		fixDef.shape.SetAsBox(1.5, 1);
+		fixDef.isSensor = true;
+		fixDef.filter.categoryBits = cats.dest;
+		fixDef.filter.maskBits = cats.arbs;
+		bodyDef.position.Set(vein.xcenter, vein.ycenter);
+		destination = world.CreateBody(bodyDef).CreateFixture(fixDef);
+		destination.utype = 'destination'; 
+		
+		
+		//Draw RBS
+ 		for(var i = 0; i < redcellstart; i++){ 
+ 				newrb();
+ 		}    
+		
+
+		//Draw Cells
+ 		for(var i = 0; i < cellstart; i++){ 
+ 			setTimeout(function(){
+ 				randcell();
+ 			}, Math.random() * i * 1000); 
+ 		}     
+
+
+	   //setup debug draw
+	   var debugDraw = new b2DebugDraw();
+			debugDraw.SetSprite(document.getElementById("collisioncanvas").getContext("2d"));
+			debugDraw.SetDrawScale(45.0);
+			debugDraw.SetFillAlpha(0.5);
+			debugDraw.SetLineThickness(1.0);
+			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+			world.SetDebugDraw(debugDraw);
+
+	   window.setInterval(update, 1000 / 60);
+
+	   //mouse
+	   var mousePVec, isMouseDown, selectedBody;
+	   mousecollision = new b2BodyDef;
+	   $(document.body).on("mousedown touchstart", function(e) {  
+		
+			if(e.type === 'touchstart'){
+				e = e.touches[0];
+			}
+		
+	      isMouseDown = true; 
+			canvasratio = $('#collisioncanvas').attr('width') / $('#collisioncanvas').width(); 
+	
+			for (var b = world.m_bodyList; b; b = b.m_next) {
+				var xf = b.m_xf;
+	            for (var f = b.GetFixtureList(); f; f = f.m_next) {
+	                if(f.utype == 'cell' || f.utype =='vein'){
+          				b.canselect = true;
+					}
+				}
+			}
+	
+	      handleMouseMove(e); 
+	      $(document.body).on("mousemove touchmove", handleMouseMove); 
+
+	   });
+
+	   $(document.body).on("mouseup touchend", function(e) {  
+			if(e.type === 'touchend'){
+				e = e.touches[0];
+			}
+		
+			$(document.body).off("mousemove touchmove", handleMouseMove);
+			var rb =  world.pathlist[0];
+			if(rb === undefined) return;
+			rb.utype = 'rbmoving';
+			rb.m_filter.categoryBits = cats.arbs;
+			rb.m_filter.maskBits = cats.dest | cats.cells | cats.walls;
+			world.pathlist.shift();
+			rb.path = world.pathlist;
+			rb.path.push(destination); 
+			world.pathlist = []; 
+			
+			var ctx = document.getElementById('pathcanvas').getContext('2d'); 
+			ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+			
+			isMouseDown = false;
+			mouseX = undefined;
+			mouseY = undefined;  
+	   });
+
+	   function handleMouseMove(e) { 
+		
+			if(e.type === 'touchmove'){
+				e = e.touches[0];
+			}
+		
+	      mouseX = ((e.pageX - $('#gameholder').position().left) / 45) * canvasratio;
+	      mouseY = ((e.pageY - $('#gameholder').position().top) / 45) * canvasratio;   
+	      //console.log(e.x, e.y, $('body').css('webkitTransform'));
+	   };
+
+	   function getBodyAtMouse() {
+	      mousePVec = new b2Vec2(mouseX, mouseY);
+	      var aabb = new b2AABB();
+	      aabb.lowerBound.Set(mouseX - 0.001, mouseY - 0.001);
+	      aabb.upperBound.Set(mouseX + 0.001, mouseY + 0.001);  
+
+	      // Query the world for overlapping shapes.
+	      selectedBody = null;
+	      world.QueryAABB(getBodyCB, aabb);
+	      return selectedBody;
+	   }
+
+	   function getBodyCB(fixture) {
+	      if(fixture.GetBody().GetType() != b2Body.b2_staticBody && (fixture.utype === 'cell' || fixture.utype === 'rbcharging')) {
+	         if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)) {
+	            selectedBody = fixture.GetBody();
+	            return false;
+	         }
+	      }
+	      return true;
+	   }
+
+	   //update 
+	   function heartbeat(){
+			currentbeat+=1;  
+
+			rbmovement = rbmovement * 1.006;
+			cellmovement = cellmovement * 1.006;
+			lifeminus = lifeminus * 1.006; 
+			
+			if(currentbeat >= newcellbeat && !failed){
+				currentbeat = 0;
+				randcell();
+			} 
+			
+			if(failed){
+				document.getElementById('border').style.webkitAnimationPlayState = 'paused'; 
+				$('#background').css({
+					'-webkit-filter': ['contrast(100%)'].join('')
+				}); 
+			}
+		
+			for (var b = world.m_bodyList; b; b = b.m_next) {
+				var xf = b.m_xf;
+	            for (var f = b.GetFixtureList(); f; f = f.m_next) {
+	                switch(f.utype){
+						case 'cell':
+						b.SetAwake(true);
+						if(failed){
+						var direction = new b2Vec2(
+							(xf.position.x - destination.m_body.m_xf.position.x) * 45, 
+							(xf.position.y - destination.m_body.m_xf.position.y) * 45);
+							direction.Normalize();
+							direction.Multiply(18);
+						b.SetLinearVelocity(direction); 
+						f.m_filter.maskBits = 0;
+						continue; 
+						
+						}
+						
+						if(Math.random() > 0.5){ 
+						//	if(life < warningflash){
+							//	var direction = new b2Vec2((destination.m_body.m_xf.position.x - b.m_xf.position.x)*45, (destination.m_body.m_xf.position.y- b.m_xf.position.y)*45);
+						//	}else{
+								var direction = new b2Vec2((Math.random() - 0.5) * cellmovement, (Math.random() - 0.5) * cellmovement);
+							//}
+							direction.Normalize();
+							b.SetLinearVelocity(direction); 
+
+						}
+						break;
+						case 'rbmoving': 
+	   							b.SetAwake(true);
+								if(f.path.length === 0){
+									f.path.push(destination);
+								}
+	
+								var loc = f.path[0].m_body.m_xf.position;
+								var direction = new b2Vec2(
+									loc.x - xf.position.x, 
+									loc.y - xf.position.y);
+								
+								direction.Normalize();
+								direction.Multiply(rbmovement);	
+								 
+								b.SetLinearVelocity(direction);   			
+						
+						
+						break;
+						case 'rbcharging':
+						b.SetAwake(true);
+						if(Math.random() > 0.5){ 
+							var direction = new b2Vec2((Math.random() - 0.5) * cellmovement, (Math.random() - 0.5) * cellmovement);
+							b.SetLinearVelocity(direction); 
+						}
+						break;                 
+					}
+				}
+			}
+	   }
+	
+   	  function gamestep(){ 
+			var cells = 0;
+	
+			for (var b = world.m_bodyList; b; b = b.m_next) {
+				var xf = b.m_xf;
+	            for (var f = b.GetFixtureList(); f; f = f.m_next) {
+	               	switch(f.utype){
+						case 'cell': 
+						
+						cells += 1;
+             			f.obj_data.o2 -= lifeminus;  
+						if(f.m_shape.m_radius < cellsize){
+							f.m_shape.m_radius += 0.05;
+						}
+						if(f.obj_data.o2 < 0){
+
+							bodyDef.type = b2Body.b2_staticBody;
+   							fixDef.shape = new b2CircleShape(
+							  0.9 //radius
+							);
+							bodyDef.position.x = xf.position.x;
+							bodyDef.position.y = xf.position.y;
+							newthing = world.CreateBody(bodyDef).CreateFixture(fixDef); 
+							newthing.utype = 'deadcell'; 
+							
+							f.obj_actions.celldeath();   
+							world.DestroyBody(b);
+						}
+						break;
+						case 'deadcell':
+							 
+							var shape = f.GetShape(); 
+                            shape.SetRadius(shape.GetRadius() * exfoliate);
+							if(shape.GetRadius() < 0.1){
+								world.DestroyBody(b); 
+								console.log('exfoliate');
+							}
+
+						break;
+					}
+				}
+			}
+			
+			$('#currentalive').text(cells);  
+		}
+
+	   function update() {
+
+	      if(isMouseDown) {
+	         var body = getBodyAtMouse();
+	         if(body) {
+				if(body.GetFixtureList().utype === 'rbcharging' && world.pathlist.length === 0){
+					world.pathlist.push(body.m_fixtureList);
+					return; 
+				}
+		
+				if(body.canselect && world.pathlist.length > 0){ 
+					body.canselect = false; 
+					world.pathlist.push(body.m_fixtureList); 
+				}
+	         }
+	      }
+          
+		  gamestep();
+	      world.Step(1 / 60, 10, 10);
+		  world.DrawLiveData(); 
+		  //world.DrawDebugData();
+	      world.ClearForces();  
+
+		  currenthbtime += 1;
+			
+			// $('#gameholder').css({
+			// 	'border-width':  (1+ Math.sin((currenthbtime/hbtime)* Math.PI) * 3).toFixed(0)
+			// }); 
+			// $('#background').css({
+			// 	'-webkit-transform':  ['scale(', (1+ Math.sin((currenthbtime/hbtime)* Math.PI) * 0.05).toFixed(2), ')'].join('')
+			// });	    	
+
+		  if(currenthbtime > hbtime && !failed){
+			currenthbtime = 0;
+			heartbeat();
+			}
+	   };
+
+	};
+
+
+	        $("#btnPlay").on("click", function(){
+	            init();
+
+                $('#menu').hide();
+				$('#game').show();
+	        });
+	        $('#btnOpts').on('click', function(){
+	        		$('#menu').hide();
+	        		$('#options').show();
+	        }); 
+	
+	
+			</script>
+</body>
+</html>
